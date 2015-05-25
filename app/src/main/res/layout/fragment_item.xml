@@ -1,0 +1,14 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="265dp"
+    android:layout_height="265dp"
+    android:paddingBottom="1dp">
+
+    <ImageView
+        android:id="@+id/ic"
+        android:layout_width="265dp"
+        android:layout_height="265dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/background_material_light" />
+
+</RelativeLayout>

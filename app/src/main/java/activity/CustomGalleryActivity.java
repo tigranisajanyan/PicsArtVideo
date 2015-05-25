@@ -1,7 +1,5 @@
 package activity;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -15,17 +13,13 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.support.v7.widget.Toolbar;
-import android.transition.AutoTransition;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.intern.picsartvideo.BlankFragment;
 import com.example.intern.picsartvideo.R;
 import com.melnykov.fab.FloatingActionButton;
 
@@ -36,14 +30,15 @@ import item.CustomGalleryItem;
 import utils.SpacesItemDecoration;
 import utils.Utils;
 
-public class CustomGalleryActivity extends ActionBarActivity implements BlankFragment.OnFragmentInteractionListener {
+public class CustomGalleryActivity extends ActionBarActivity implements RecyclerViewFragment.OnFragmentInteractionListener {
 
     private RecyclerView recyclerView;
     private StaggeredGridLayoutManager staggeredGridLayoutManager;
     private RecyclerView.ItemAnimator itemAnimator;
     private ProgressBar progressBar;
-    Toolbar actionBar;
-    //BlankFragment blankFragment;
+    FragmentManager fragmentManager = getFragmentManager();
+    RecyclerViewFragment multiSelectFragment = new RecyclerViewFragment();
+    boolean brr = false;
 
     private CustomGalleryAdapter customGalleryAdapter;
     private ArrayList<CustomGalleryItem> customGalleryArrayList = new ArrayList<>();
@@ -61,9 +56,6 @@ public class CustomGalleryActivity extends ActionBarActivity implements BlankFra
     }
 
     private void init() {
-
-        //blankFragment = (BlankFragment) getFragmentManager().findFragmentById(R.id.fragment);
-
 
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         customGalleryAdapter = new CustomGalleryAdapter(customGalleryArrayList, this);
@@ -94,19 +86,33 @@ public class CustomGalleryActivity extends ActionBarActivity implements BlankFra
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*blankFragment = new BlankFragment();
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.add(R.id.fragment, blankFragment);
-                fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
-                        android.R.animator.fade_out);
-                if (blankFragment.isHidden()) {
-                    fragmentTransaction.show(blankFragment);
-                    //button.setText("Hide");
+
+
+                if (brr == false) {
+
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.setCustomAnimations(R.anim.slide_out, R.anim.slide_out);
+                    fragmentTransaction.add(R.id.frgmCont, multiSelectFragment);
+
+                    brr = true;
+                    //RecyclerViewFragment fragment = (RecyclerViewFragment) getFragmentManager().findFragmentById(R.id.frgmCont);
+                    //fragment.setmAdapter(customGalleryAdapter.getSelected());
+
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+
+                    multiSelectFragment.setmAdapter(customGalleryAdapter.getSelected());
+
+
                 } else {
-                    fragmentTransaction.hide(blankFragment);
+
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_in);
+                    fragmentTransaction.remove(multiSelectFragment);
+                    brr = false;
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
                 }
-                fragmentTransaction.commit();*/
             }
         });
 
