@@ -11,8 +11,7 @@
 
     <item
         android:id="@+id/action_settings"
-        android:icon="@android:drawable/ic_menu_add"
-        android:title="next"
+        android:title="next  "
         app:showAsAction="always" />
 
 

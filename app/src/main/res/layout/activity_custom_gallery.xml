@@ -44,9 +44,10 @@
 
     <FrameLayout
         android:id="@+id/frgmCont"
+        android:layout_margin="3dp"
         android:layout_gravity="bottom|center_vertical"
         android:layout_width="match_parent"
-        android:layout_height="550dp">
+        android:layout_height="300dp">
     </FrameLayout>
 
 </FrameLayout>

@@ -20,14 +20,6 @@ import adapter.MyAdapter;
 import utils.SpacesItemDecoration;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link RecyclerViewFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link RecyclerViewFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class RecyclerViewFragment extends Fragment {
 
     private static final String ARG_PARAM1 = "param1";
@@ -37,8 +29,6 @@ public class RecyclerViewFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     ArrayList<CharSequence> myDataset = new ArrayList<>();
-
-    private OnFragmentInteractionListener mListener;
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter = new MyAdapter(myDataset);
@@ -92,27 +82,15 @@ public class RecyclerViewFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
-    }
-
-
-    public interface OnFragmentInteractionListener {
-
-        public void onFragmentInteraction(Uri uri);
     }
 
     public void setmAdapter(ArrayList<CharSequence> arrayList) {
+        myDataset.clear();
         myDataset.addAll(arrayList);
         mAdapter.notifyDataSetChanged();
     }

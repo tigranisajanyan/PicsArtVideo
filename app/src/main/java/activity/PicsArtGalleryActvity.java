@@ -279,6 +279,8 @@ public class PicsArtGalleryActvity extends ActionBarActivity {
         PicsArtConst.REDIRECT_URI = "localhost";
         PicsArtConst.GRANT_TYPE = "authorization_code";
 
+        getSupportActionBar().setTitle("PicsArtVideo");
+
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         int width = displaymetrics.widthPixels;

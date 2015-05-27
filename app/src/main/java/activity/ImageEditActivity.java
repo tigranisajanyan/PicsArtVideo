@@ -4,8 +4,7 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
-import android.graphics.RectF;
+import android.graphics.Canvas;
 import android.os.Environment;
 import android.os.Looper;
 import android.support.v7.app.ActionBarActivity;
@@ -17,11 +16,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.intern.picsartvideo.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -32,9 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import uk.co.senab.photoview.IPhotoView;
 import uk.co.senab.photoview.PhotoView;
-import uk.co.senab.photoview.PhotoViewAttacher;
 import utils.Utils;
 
 
@@ -49,7 +49,9 @@ public class ImageEditActivity extends ActionBarActivity {
 
     private PhotoView cropImageView;
     private ImageView cropImageCorner;
+    private EditText editText;
     private Button rotateButton;
+    private Button button;
     private Intent intent;
     private String fileName;
     private int count = 0;
@@ -71,7 +73,9 @@ public class ImageEditActivity extends ActionBarActivity {
         count = sharedPreferences.getInt("edited_count", 0);
         cropImageView = (PhotoView) findViewById(R.id.crop_image_view);
         cropImageCorner = (ImageView) findViewById(R.id.corner_image);
+        editText = (EditText) findViewById(R.id.edt_txt);
         rotateButton = (Button) findViewById(R.id.rotate_button);
+        button = (Button) findViewById(R.id.del);
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
@@ -80,17 +84,32 @@ public class ImageEditActivity extends ActionBarActivity {
         cropImageView.setLayoutParams(layoutParams);
         cropImageCorner.setLayoutParams(layoutParams);
 
+        intent = getIntent();
 
-        cropImageView.setOnScaleChangeListener(new PhotoViewAttacher.OnScaleChangeListener() {
+        Animation scaleAnimation = new ScaleAnimation(0, 1, 1, 1);
+        scaleAnimation.setDuration(750);
+        editText.startAnimation(scaleAnimation);
+        editText.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onScaleChange(float scaleFactor, float focusX, float focusY) {
-                Log.d("gagagaga", focusX + "  /   " + focusY + "    //    " + scaleFactor);
+            public boolean onTouch(View v, MotionEvent event) {
+                ClipData data = ClipData.newPlainText("", "");
+                View.DragShadowBuilder shadow = new View.DragShadowBuilder(editText);
+                float screenX = v.getLeft() + event.getX();
+                float screenY = v.getTop() + event.getY();
 
+                Log.d("gagagag",screenX+"   /   "+screenY);
+                v.startDrag(data, shadow, null, 0);
+                return false;
             }
         });
 
+        cropImageView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
 
-        intent = getIntent();
+                return false;
+            }
+        });
 
         String path = intent.getStringExtra(IMAGE_PATH);
         if (intent.getStringExtra(IMAGE_PATH).contains("storage/emulated")) {
@@ -104,6 +123,31 @@ public class ImageEditActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 cropImageView.setRotationBy(90);
+            }
+        });
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bitmap bitmap = cropImageView.getVisibleRectangleBitmap();
+                editText.setDrawingCacheEnabled(true);
+                Bitmap b = editText.getDrawingCache();
+                Canvas canvas = new Canvas(bitmap);
+                canvas.drawBitmap(b, editText.getX(), editText.getY(), null);
+                FileOutputStream out = null;
+                try {
+                    out = new FileOutputStream(new File(myDir, "gag.jpg"));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
+                try {
+                    out.flush();
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -163,19 +207,19 @@ public class ImageEditActivity extends ActionBarActivity {
                 data.putExtra(INDEX, intent.getIntExtra(INDEX, -1));
                 if (intent.getBooleanExtra("isEdited", false) == true) {
                     new File(intent.getStringExtra(IMAGE_PATH)).delete();
-                    Log.d("gagagagag", "donr");
                 }
                 setResult(RESULT_OK, data);
                 finish();
             }
         }
         ).start();
+        Toast.makeText(getApplicationContext(), "Image Saved", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onDestroy() {
-
         super.onDestroy();
+
     }
 
 }

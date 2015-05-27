@@ -4,8 +4,6 @@
     tools:context="activity.ImageEditActivity">
     <item
         android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:icon="@android:drawable/ic_menu_add"
-        android:title=""
+        android:title="Save  "
         app:showAsAction="always" />
 </menu>

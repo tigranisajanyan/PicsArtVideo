@@ -30,9 +30,12 @@ public class CustomGalleryAdapter extends RecyclerView.Adapter<CustomGalleryAdap
     private Context context;
     private LayoutInflater infalter;
 
+    ActionBar actionBar;
 
-    public CustomGalleryAdapter(ArrayList<CustomGalleryItem> arr, Context c) {
 
+    public CustomGalleryAdapter(ArrayList<CustomGalleryItem> arr, Context c, ActionBar actionBar) {
+
+        this.actionBar = actionBar;
         infalter = (LayoutInflater) c
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         array = arr;
@@ -54,10 +57,14 @@ public class CustomGalleryAdapter extends RecyclerView.Adapter<CustomGalleryAdap
 
                 if (array.get(position).isSeleted()) {
                     array.get(position).setIsSeleted(false);
-
+                    actionBar.setTitle("   " + getSelected().size() + " Selected");
+                    if (getSelected().size() == 0) {
+                        actionBar.setTitle("PicsArtVideo");
+                    }
 
                 } else {
                     array.get(position).setIsSeleted(true);
+                    actionBar.setTitle("   " + getSelected().size() + " Selected");
                 }
 
                 holder.select.setSelected(array

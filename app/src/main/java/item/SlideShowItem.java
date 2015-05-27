@@ -6,9 +6,9 @@ package item;
 public class SlideShowItem {
 
 
-    public String path;
-    public boolean isEdited;
-    public boolean isFromFileSystem;
+    private String path;
+    private boolean isEdited;
+    private boolean isFromFileSystem;
 
     public SlideShowItem() {
         this.path = null;

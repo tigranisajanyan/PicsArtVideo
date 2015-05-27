@@ -20,12 +20,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/corner" />
+
+        <EditText
+            android:id="@+id/edt_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            android:cursorVisible="false"
+            android:hint="enter text "
+            android:textColor="#0192E6"
+            android:textSize="40dp" />
     </FrameLayout>
 
     <LinearLayout
         android:id="@+id/gag"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:gravity="center_horizontal"
         android:orientation="horizontal">
 
@@ -33,15 +45,17 @@
             android:id="@+id/rotate_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="rotate" />
+            android:text="rotate"
+            android:textColor="#0192E6" />
 
-        <!--<Button
+        <Button
             android:id="@+id/del"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="60dp"
-            android:text="del" />-->
+            android:text="del"
+            android:textColor="#0192E6" />
+
     </LinearLayout>
 </LinearLayout>
 

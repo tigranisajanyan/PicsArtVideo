@@ -4,8 +4,7 @@
     tools:context="activity.SlideShowActivity">
     <item
         android:id="@+id/action_settings"
-        android:icon="@android:drawable/ic_menu_add"
         android:orderInCategory="100"
-        android:title=""
+        android:title="Next  "
         app:showAsAction="always" />
 </menu>

@@ -1,18 +1,22 @@
 package activity;
 
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -22,6 +26,7 @@ import com.example.intern.picsartvideo.R;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import adapter.ImagePagerAdapter;
 import adapter.SlideShowAdapter;
@@ -35,11 +40,15 @@ public class SlideShowActivity extends ActionBarActivity {
     private RecyclerView recyclerView;
     private Button openGalleryButton;
     private Button openPicsArtButton;
+    private Button playButton;
 
     private ImagePagerAdapter imagePagerAdapter;
     private SlideShowAdapter slideShowAdapter;
     private StaggeredGridLayoutManager staggeredGridLayoutManager;
     private RecyclerView.ItemAnimator itemAnimator;
+
+    private SlideShow slideShow;
+    private Boolean playButtonIsSelected = false;
 
     private ArrayList<SlideShowItem> selectedImagesPathList = new ArrayList<>();
 
@@ -63,12 +72,12 @@ public class SlideShowActivity extends ActionBarActivity {
         charSequences = intent.getCharSequenceArrayListExtra("image_paths");
         for (int i = 0; i < charSequences.size(); i++) {
             SlideShowItem slideShowItem = new SlideShowItem(charSequences.get(i).toString(), false, false);
-            //slideShowItem.path = charSequences.get(i).toString();
             if (intent.getBooleanExtra("isfile", false)) {
                 slideShowItem.setIsFromFileSystem(true);
             }
             selectedImagesPathList.add(slideShowItem);
         }
+
         init();
 
     }
@@ -83,11 +92,13 @@ public class SlideShowActivity extends ActionBarActivity {
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         openGalleryButton = (Button) findViewById(R.id.open_gallery_button);
         openPicsArtButton = (Button) findViewById(R.id.open_pics_art_button);
+        playButton = (Button) findViewById(R.id.play_button);
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width, width);
         viewPager.setLayoutParams(layoutParams);
         imagePagerAdapter = new ImagePagerAdapter(selectedImagesPathList, SlideShowActivity.this, recyclerView);
         viewPager.setAdapter(imagePagerAdapter);
+        //viewPager.setOffscreenPageLimit(selectedImagesPathList.size());
 
         slideShowAdapter = new SlideShowAdapter(selectedImagesPathList, this, viewPager, imagePagerAdapter);
         staggeredGridLayoutManager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL);
@@ -112,6 +123,24 @@ public class SlideShowActivity extends ActionBarActivity {
                 startActivityForResult(intent, REQUEST_CODE_FOR_PICS_ART);
             }
         });
+
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (playButtonIsSelected == false) {
+                    playButtonIsSelected = true;
+                    slideShow = new SlideShow();
+                    slideShow.execute();
+
+                } else {
+                    playButtonIsSelected = false;
+                    slideShow.cancel(true);
+                    Toast.makeText(getApplicationContext(), "stoped", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
     }
 
     @Override
@@ -126,6 +155,7 @@ public class SlideShowActivity extends ActionBarActivity {
                 }
                 imagePagerAdapter.notifyDataSetChanged();
                 slideShowAdapter.notifyDataSetChanged();
+                recyclerView.scrollToPosition(0);
             }
         }
         if (requestCode == REQUEST_CODE_FOR_CUSTOM_GALLERY && resultCode == Activity.RESULT_OK) {
@@ -137,6 +167,7 @@ public class SlideShowActivity extends ActionBarActivity {
                 }
                 imagePagerAdapter.notifyDataSetChanged();
                 slideShowAdapter.notifyDataSetChanged();
+                recyclerView.scrollToPosition(0);
             }
         }
         if (requestCode == REQUEST_CODE_FOR_EDIT && resultCode == Activity.RESULT_OK) {
@@ -145,6 +176,7 @@ public class SlideShowActivity extends ActionBarActivity {
                 selectedImagesPathList.set(data.getIntExtra(INDEX, -1), slideShowItem);
                 slideShowAdapter.notifyItemChanged(data.getIntExtra(INDEX, -1));
                 imagePagerAdapter.notifyDataSetChanged();
+                recyclerView.scrollToPosition(0);
             }
         }
     }
@@ -163,7 +195,7 @@ public class SlideShowActivity extends ActionBarActivity {
 
                 String[] pathsForDecoding = new String[selectedImagesPathList.size()];
                 for (int i = 0; i < selectedImagesPathList.size(); i++) {
-                    pathsForDecoding[i] = selectedImagesPathList.get(i).path;
+                    pathsForDecoding[i] = selectedImagesPathList.get(i).getPath();
                 }
 
                 Intent intentService = new Intent(this, MyService.class);
@@ -187,13 +219,51 @@ public class SlideShowActivity extends ActionBarActivity {
     protected void onDestroy() {
         SharedPreferences sharedPreferences = this.getSharedPreferences("pics_art_video", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        //editor.putBoolean("pics_art_gallery_isopen", false);
-        //editor.putBoolean("custom_gallery_isopen", false);
-        //editor.putInt("edited_count", 0);
-        //editor.putBoolean("isopen", false);
         editor.clear();
         editor.commit();
         super.onDestroy();
+    }
+
+    private class SlideShow extends AsyncTask<Void, Integer, Void> {
+        protected Void doInBackground(Void... path) {
+
+            for (int i = 0; i < selectedImagesPathList.size(); i++) {
+                for (int j = 80; j > 0; j--) {
+                    if (isCancelled()) return null;
+
+                    final int finalI = i;
+                    final int finalJ = j;
+                    runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            staggeredGridLayoutManager.scrollToPositionWithOffset(finalI + 1, finalJ * 2);
+                            //recyclerView.smoothScrollToPosition(finalI);
+                            viewPager.setCurrentItem(finalI, true);
+                            //viewPager.scrollBy(9,0);
+
+                        }
+                    });
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(8);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+            playButtonIsSelected = false;
+            return null;
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            playButtonIsSelected = false;
+            super.onPostExecute(aVoid);
+        }
     }
 
 }

@@ -3,11 +3,9 @@ package activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,10 +15,7 @@ import com.example.intern.picsartvideo.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 
-import item.CustomGalleryItem;
 import utils.FileUtils;
 import utils.Utils;
 
@@ -41,10 +36,6 @@ public class MainActivity extends ActionBarActivity {
 
         SharedPreferences sharedPreferences = this.getSharedPreferences("pics_art_video", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        //editor.putBoolean("pics_art_gallery_isopen", false);
-        //editor.putBoolean("custom_gallery_isopen", false);
-        //editor.putInt("edited_count", 0);
-        //editor.putBoolean("isopen", false);
         editor.clear();
         editor.commit();
 
@@ -60,9 +51,6 @@ public class MainActivity extends ActionBarActivity {
         ImageLoader.getInstance().clearDiskCache();
         context = this;
         FileUtils.craeteDir("req_images");
-
-        //new MyTask().execute();
-
 
         picsArtGalleryButton = (Button) findViewById(R.id.pics_art_gallery_button);
         picsArtGalleryButton.setOnClickListener(new View.OnClickListener() {
@@ -101,45 +89,6 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    class MyTask extends AsyncTask<Void, Void, Void> {
-
-        ArrayList<Integer> integers = new ArrayList<>();
-        ArrayList<String> strings = new ArrayList<>();
-        ArrayList<CustomGalleryItem> customGalleryItems = new ArrayList<>();
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            strings = Utils.getGalleryPhotos1(MainActivity.this);
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            //
-            for (int i = 0; i < strings.size(); i++) {
-                try {
-                    integers.add((int) Utils.getBitmapHeight(strings.get(i)));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                /*try {
-                    customGalleryItems.add(new CustomGalleryItem(strings.get(i), false, (int) Utils.getBitmapWidth(), (int) Utils.getBitmapHeight(strings.get(i))));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }*/
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            FileUtils.writeListToJson1(MainActivity.this, customGalleryItems, "file.json");
-            Log.d("gagaaag", "done");
-        }
     }
 
 }

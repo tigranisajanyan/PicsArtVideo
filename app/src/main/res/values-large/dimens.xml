@@ -1,0 +1,17 @@
+<resources>
+
+    <dimen name="button_width">65dp</dimen>
+    <dimen name="button_height">65dp</dimen>
+
+    <dimen name="icon_button_width">35dp</dimen>
+    <dimen name="icon_button_height">35dp</dimen>
+
+    <dimen name="photo_width">150dp</dimen>
+    <dimen name="photo_height">150dp</dimen>
+
+    <dimen name="image_width">450dp</dimen>
+    <dimen name="image_height">450dp</dimen>
+
+    <dimen name="text_size">50dp</dimen>
+
+</resources>

@@ -64,9 +64,9 @@ public class ImagePagerAdapter extends PagerAdapter {
         FrameLayout frameLayout = (FrameLayout) inflater.inflate(R.layout.main_image_frame, container, false);
         final ImageView imageView = (ImageView) frameLayout.findViewById(R.id.view_pager_image);
 
-        String path = mImages.get(position).path;
-        if (mImages.get(position).path.contains("storage/emulated")) {
-            path = "file://" + mImages.get(position).path;
+        String path = mImages.get(position).getPath();
+        if (mImages.get(position).isFromFileSystem()) {
+            path = "file://" + mImages.get(position).getPath();
         }
 
 
@@ -94,7 +94,7 @@ public class ImagePagerAdapter extends PagerAdapter {
             }
         });
 
-        recyclerView.smoothScrollToPosition(position);
+        //recyclerView.smoothScrollToPosition(position);
         ((ViewPager) container).addView(frameLayout, 0);
         return frameLayout;
     }

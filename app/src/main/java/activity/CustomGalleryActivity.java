@@ -13,7 +13,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.view.LayoutInflater;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,15 +30,15 @@ import item.CustomGalleryItem;
 import utils.SpacesItemDecoration;
 import utils.Utils;
 
-public class CustomGalleryActivity extends ActionBarActivity implements RecyclerViewFragment.OnFragmentInteractionListener {
+public class CustomGalleryActivity extends ActionBarActivity {
 
     private RecyclerView recyclerView;
     private StaggeredGridLayoutManager staggeredGridLayoutManager;
     private RecyclerView.ItemAnimator itemAnimator;
     private ProgressBar progressBar;
-    FragmentManager fragmentManager = getFragmentManager();
-    RecyclerViewFragment multiSelectFragment = new RecyclerViewFragment();
-    boolean brr = false;
+    private FragmentManager fragmentManager = getFragmentManager();
+    private RecyclerViewFragment multiSelectFragment = new RecyclerViewFragment();
+    private boolean fragmentIsOpen = false;
 
     private CustomGalleryAdapter customGalleryAdapter;
     private ArrayList<CustomGalleryItem> customGalleryArrayList = new ArrayList<>();
@@ -50,15 +50,13 @@ public class CustomGalleryActivity extends ActionBarActivity implements Recycler
 
         init();
 
-        /*actionBar = (Toolbar) findViewById(R.id.actionBar);
-        setSupportActionBar(actionBar);*/
-
     }
 
     private void init() {
-
+        
+        getSupportActionBar().setTitle("PicsArtVideo");
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
-        customGalleryAdapter = new CustomGalleryAdapter(customGalleryArrayList, this);
+        customGalleryAdapter = new CustomGalleryAdapter(customGalleryArrayList, this,getSupportActionBar());
 
         recyclerView = (RecyclerView) findViewById(R.id.gallery_rec_view);
         staggeredGridLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
@@ -72,34 +70,20 @@ public class CustomGalleryActivity extends ActionBarActivity implements Recycler
         recyclerView.setAdapter(customGalleryAdapter);
         recyclerView.addItemDecoration(new SpacesItemDecoration(2));
 
-
-
-        /*recyclerView.setOnScrollListener(new MyScrollListener(this) {
-            @Override
-            public void onMoved(int distance) {
-                actionBar.setTranslationY(-distance);
-            }
-        });*/
-
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.attachToRecyclerView(recyclerView);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-
-                if (brr == false) {
+                if (fragmentIsOpen == false) {
 
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction.setCustomAnimations(R.anim.slide_out, R.anim.slide_out);
                     fragmentTransaction.add(R.id.frgmCont, multiSelectFragment);
-
-                    brr = true;
-                    //RecyclerViewFragment fragment = (RecyclerViewFragment) getFragmentManager().findFragmentById(R.id.frgmCont);
-                    //fragment.setmAdapter(customGalleryAdapter.getSelected());
-
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
+                    fragmentIsOpen = true;
 
                     multiSelectFragment.setmAdapter(customGalleryAdapter.getSelected());
 
@@ -109,9 +93,12 @@ public class CustomGalleryActivity extends ActionBarActivity implements Recycler
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_in);
                     fragmentTransaction.remove(multiSelectFragment);
-                    brr = false;
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
+                    fragmentIsOpen = false;
+
+                    multiSelectFragment.setmAdapter(new ArrayList<CharSequence>());
+
                 }
             }
         });
@@ -162,11 +149,6 @@ public class CustomGalleryActivity extends ActionBarActivity implements Recycler
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
-
     class MyTask extends AsyncTask<Void, Void, Void> {
 
         @Override
@@ -176,7 +158,6 @@ public class CustomGalleryActivity extends ActionBarActivity implements Recycler
 
         @Override
         protected Void doInBackground(Void... params) {
-            //FileUtils.readListFromJson1(CustomGalleryActivity.this,customGalleryArrayList,"file.json");
             customGalleryArrayList.addAll(Utils.getGalleryPhotos(CustomGalleryActivity.this));
             return null;
         }
@@ -187,41 +168,6 @@ public class CustomGalleryActivity extends ActionBarActivity implements Recycler
             customGalleryAdapter.notifyDataSetChanged();
             progressBar.setVisibility(View.GONE);
         }
-    }
-
-    public abstract class MyScrollListener extends RecyclerView.OnScrollListener {
-
-        private int toolbarOffset = 0;
-        private int toolbarHeight;
-
-        public MyScrollListener(Context context) {
-            int[] actionBarAttr = new int[]{android.R.attr.actionBarSize};
-            TypedArray a = context.obtainStyledAttributes(actionBarAttr);
-            toolbarHeight = (int) a.getDimension(0, 0) + 10;
-            a.recycle();
-        }
-
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            super.onScrolled(recyclerView, dx, dy);
-
-            clipToolbarOffset();
-            onMoved(toolbarOffset);
-
-            if ((toolbarOffset < toolbarHeight && dy > 0) || (toolbarOffset > 0 && dy < 0)) {
-                toolbarOffset += dy;
-            }
-        }
-
-        private void clipToolbarOffset() {
-            if (toolbarOffset > toolbarHeight) {
-                toolbarOffset = toolbarHeight;
-            } else if (toolbarOffset < 0) {
-                toolbarOffset = 0;
-            }
-        }
-
-        public abstract void onMoved(int distance);
     }
 
 }

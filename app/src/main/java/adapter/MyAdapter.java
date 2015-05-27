@@ -6,7 +6,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.intern.picsartvideo.R;
@@ -62,7 +64,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
 
-        ImageLoader.getInstance().displayImage( "file://"+mDataset.get(position).toString()
+
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams((int) (Utils.getBitmapWidth()/1.08), (int) (Utils.getBitmapWidth()/1.08));
+        holder.icon.setLayoutParams(layoutParams);
+
+        ImageLoader.getInstance().displayImage("file://" + mDataset.get(position).toString()
                 , holder.icon, new SimpleImageLoadingListener() {
 
             @Override
@@ -73,7 +79,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                holder.icon.setImageBitmap(Utils.scaleCenterCrop(loadedImage,600,600));
+                holder.icon.setImageBitmap(Utils.scaleCenterCrop(loadedImage, 500, 500));
                 super.onLoadingComplete(imageUri, view, loadedImage);
             }
         });

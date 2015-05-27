@@ -3,6 +3,7 @@ package adapter;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.os.Environment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -69,9 +71,9 @@ public class SlideShowAdapter extends RecyclerView.Adapter<SlideShowAdapter.View
             }
         });
 
-        String path = arrayList.get(position).path;
-        if (arrayList.get(position).isFromFileSystem) {
-            path = "file://" + arrayList.get(position).path;
+        String path = arrayList.get(position).getPath();
+        if (arrayList.get(position).isFromFileSystem()) {
+            path = "file://" + arrayList.get(position).getPath();
         }
 
         try {
@@ -151,6 +153,16 @@ public class SlideShowAdapter extends RecyclerView.Adapter<SlideShowAdapter.View
 
                 }
             });
+
+            /*slideShowImage.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    ClipData data = ClipData.newPlainText("", "");
+                    View.DragShadowBuilder shadow = new View.DragShadowBuilder(slideShowImage);
+                    v.startDrag(data, shadow, null, 0);
+                    return false;
+                }
+            });*/
         }
 
         DialogInterface.OnClickListener myClickListener = new DialogInterface.OnClickListener() {
@@ -158,8 +170,8 @@ public class SlideShowAdapter extends RecyclerView.Adapter<SlideShowAdapter.View
                 switch (which) {
                     case Dialog.BUTTON_POSITIVE: {
 
-                        if (arrayList.get(getPosition()).path.contains(myDir.toString())) {
-                            new File(arrayList.get(getPosition()).path).delete();
+                        if (arrayList.get(getPosition()).getPath().contains(myDir.toString())) {
+                            new File(arrayList.get(getPosition()).getPath()).delete();
                         }
                         removeAt(getPosition());
                         imagePagerAdapter.notifyDataSetChanged();
