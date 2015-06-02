@@ -15,8 +15,8 @@
         android:layout_marginLeft="3dp"
         android:layout_marginTop="3dp"
         android:id="@+id/gallery_item_selected"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="@dimen/icon_button_width"
+        android:layout_height="@dimen/icon_button_height"
         android:layout_gravity="left|top"
         android:background="@drawable/on_focus_checkbox"
         android:visibility="gone" />

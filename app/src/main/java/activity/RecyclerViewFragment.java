@@ -1,6 +1,7 @@
 package activity;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -29,19 +30,11 @@ public class RecyclerViewFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     ArrayList<CharSequence> myDataset = new ArrayList<>();
+    FragmentManager fragmentManager;
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter = new MyAdapter(myDataset);
     private RecyclerView.LayoutManager mLayoutManager;
-
-    public static RecyclerViewFragment newInstance(String param1, String param2) {
-        RecyclerViewFragment fragment = new RecyclerViewFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     public RecyclerViewFragment() {
         // Required empty public constructor
@@ -73,7 +66,7 @@ public class RecyclerViewFragment extends Fragment {
 
         mRecyclerView.setHasFixedSize(true);
 
-        mLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+        mLayoutManager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(3));
         mRecyclerView.setAdapter(mAdapter);
@@ -89,9 +82,12 @@ public class RecyclerViewFragment extends Fragment {
         super.onDetach();
     }
 
-    public void setmAdapter(ArrayList<CharSequence> arrayList) {
+    public void setmAdapter(ArrayList<CharSequence> arrayList, FragmentManager fragmentManager) {
         myDataset.clear();
         myDataset.addAll(arrayList);
+
+        this.fragmentManager=fragmentManager;
+
         mAdapter.notifyDataSetChanged();
     }
 

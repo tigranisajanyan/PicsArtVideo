@@ -1,6 +1,6 @@
 <resources>
-    <dimen name="button_width">40dp</dimen>
-    <dimen name="button_height">40dp</dimen>
+    <dimen name="button_width">42dp</dimen>
+    <dimen name="button_height">42dp</dimen>
 
     <dimen name="icon_button_width">23dp</dimen>
     <dimen name="icon_button_height">23dp</dimen>

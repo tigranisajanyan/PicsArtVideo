@@ -57,26 +57,20 @@ public class CustomGalleryAdapter extends RecyclerView.Adapter<CustomGalleryAdap
 
                 if (array.get(position).isSeleted()) {
                     array.get(position).setIsSeleted(false);
-                    actionBar.setTitle("   " + getSelected().size() + " Selected");
+                    actionBar.setTitle(" " + getSelected().size() + " Selected");
                     if (getSelected().size() == 0) {
                         actionBar.setTitle("PicsArtVideo");
                     }
 
                 } else {
                     array.get(position).setIsSeleted(true);
-                    actionBar.setTitle("   " + getSelected().size() + " Selected");
+                    actionBar.setTitle(" " + getSelected().size() + " Selected");
                 }
 
                 holder.select.setSelected(array
                         .get(position).isSeleted());
             }
         });
-
-        /*try {
-            height = (int) Utils.getBitmapHeight(array.get(position).imagePath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(array.get(position).getWidth(), array.get(position).getHeight());
         holder.icon.setLayoutParams(layoutParams);
         try {

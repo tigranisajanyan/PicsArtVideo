@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.PersistableBundle;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -85,7 +86,7 @@ public class CustomGalleryActivity extends ActionBarActivity {
                     fragmentTransaction.commit();
                     fragmentIsOpen = true;
 
-                    multiSelectFragment.setmAdapter(customGalleryAdapter.getSelected());
+                    multiSelectFragment.setmAdapter(customGalleryAdapter.getSelected(),fragmentManager);
 
 
                 } else {
@@ -97,7 +98,7 @@ public class CustomGalleryActivity extends ActionBarActivity {
                     fragmentTransaction.commit();
                     fragmentIsOpen = false;
 
-                    multiSelectFragment.setmAdapter(new ArrayList<CharSequence>());
+                    //multiSelectFragment.setmAdapter(new ArrayList<CharSequence>());
 
                 }
             }

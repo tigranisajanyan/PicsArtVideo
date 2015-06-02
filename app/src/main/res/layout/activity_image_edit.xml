@@ -28,9 +28,12 @@
             android:layout_gravity="center"
             android:background="@android:color/transparent"
             android:cursorVisible="false"
+            android:drawingCacheQuality="high"
             android:hint="enter text "
+            android:inputType="textNoSuggestions"
             android:textColor="#0192E6"
-            android:textSize="40dp" />
+            android:textSize="40dp"
+            android:visibility="gone" />
     </FrameLayout>
 
     <LinearLayout
@@ -44,18 +47,33 @@
         <Button
             android:id="@+id/rotate_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/button_height"
             android:text="rotate"
             android:textColor="#0192E6" />
 
         <Button
-            android:id="@+id/del"
+            android:id="@+id/add_text_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="60dp"
-            android:text="del"
+            android:layout_height="@dimen/button_height"
+            android:layout_marginLeft="30dp"
+            android:text="add text"
+            android:textColor="#0192E6" />
+
+        <Button
+            android:id="@+id/add_sticker_button"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/button_height"
+            android:layout_marginLeft="30dp"
+            android:text="sticker"
             android:textColor="#0192E6" />
 
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/frame_layout"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:gravity="bottom|center_vertical"></FrameLayout>
+
 </LinearLayout>
 

@@ -1,10 +1,17 @@
 package activity;
 
+import android.app.AlertDialog;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.ClipData;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.os.Environment;
 import android.os.Looper;
 import android.support.v7.app.ActionBarActivity;
@@ -33,6 +40,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import uk.co.senab.photoview.PhotoView;
 import utils.Utils;
@@ -51,11 +59,18 @@ public class ImageEditActivity extends ActionBarActivity {
     private ImageView cropImageCorner;
     private EditText editText;
     private Button rotateButton;
-    private Button button;
+    private Button addStickerButton;
+    private Button addTextButton;
     private Intent intent;
     private String fileName;
     private int count = 0;
-    LinearLayout drop;
+    float x = 0;
+    float y = 0;
+
+    private FragmentManager fragmentManager = getFragmentManager();
+    private RecyclerViewFragment multiSelectFragment = new RecyclerViewFragment();
+    private boolean fragmentIsOpen = false;
+    private static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,14 +83,15 @@ public class ImageEditActivity extends ActionBarActivity {
 
     private void init() {
 
-        drop = (LinearLayout) findViewById(R.id.gag);
+        context = this;
         SharedPreferences sharedPreferences = getSharedPreferences("pics_art_video", MODE_PRIVATE);
         count = sharedPreferences.getInt("edited_count", 0);
         cropImageView = (PhotoView) findViewById(R.id.crop_image_view);
         cropImageCorner = (ImageView) findViewById(R.id.corner_image);
         editText = (EditText) findViewById(R.id.edt_txt);
         rotateButton = (Button) findViewById(R.id.rotate_button);
-        button = (Button) findViewById(R.id.del);
+        addStickerButton = (Button) findViewById(R.id.add_sticker_button);
+        addTextButton = (Button) findViewById(R.id.add_text_button);
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
@@ -86,27 +102,10 @@ public class ImageEditActivity extends ActionBarActivity {
 
         intent = getIntent();
 
-        Animation scaleAnimation = new ScaleAnimation(0, 1, 1, 1);
-        scaleAnimation.setDuration(750);
-        editText.startAnimation(scaleAnimation);
-        editText.setOnTouchListener(new View.OnTouchListener() {
+        editText.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                ClipData data = ClipData.newPlainText("", "");
-                View.DragShadowBuilder shadow = new View.DragShadowBuilder(editText);
-                float screenX = v.getLeft() + event.getX();
-                float screenY = v.getTop() + event.getY();
-
-                Log.d("gagagag",screenX+"   /   "+screenY);
-                v.startDrag(data, shadow, null, 0);
-                return false;
-            }
-        });
-
-        cropImageView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-
+            public boolean onLongClick(View view) {
+                editText.startDrag(ClipData.newPlainText("", ""), new View.DragShadowBuilder(editText), null, 0);
                 return false;
             }
         });
@@ -126,30 +125,99 @@ public class ImageEditActivity extends ActionBarActivity {
             }
         });
 
-        button.setOnClickListener(new View.OnClickListener() {
+        addTextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bitmap bitmap = cropImageView.getVisibleRectangleBitmap();
-                editText.setDrawingCacheEnabled(true);
-                Bitmap b = editText.getDrawingCache();
-                Canvas canvas = new Canvas(bitmap);
-                canvas.drawBitmap(b, editText.getX(), editText.getY(), null);
-                FileOutputStream out = null;
-                try {
-                    out = new FileOutputStream(new File(myDir, "gag.jpg"));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
-                try {
-                    out.flush();
-                    out.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (editText.getVisibility() == View.GONE) {
+                    editText.setVisibility(View.VISIBLE);
+                } else {
+                    editText.setVisibility(View.GONE);
                 }
             }
         });
+
+        addStickerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (fragmentIsOpen == false) {
+
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.setCustomAnimations(R.anim.slide_out, R.anim.slide_out);
+                    fragmentTransaction.add(R.id.frame_layout, multiSelectFragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                    fragmentIsOpen = true;
+
+                    ArrayList<CharSequence> charSequences = new ArrayList<CharSequence>();
+                    charSequences.add("gagaga");
+                    charSequences.add("gagagag");
+                    charSequences.add("gagaga");
+                    charSequences.add("gagagag");
+                    charSequences.add("gagaga");
+                    charSequences.add("gagagag");
+                    multiSelectFragment.setmAdapter(charSequences, fragmentManager);
+
+                    cropImageCorner.setOnTouchListener(myTouchListener);
+
+                } else {
+
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_in);
+                    fragmentTransaction.remove(multiSelectFragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                    fragmentIsOpen = false;
+
+                    cropImageCorner.setOnTouchListener(null);
+
+                }
+            }
+        });
+
+        cropImageView.setOnDragListener(new View.OnDragListener() {
+
+            @Override
+            public boolean onDrag(View v, DragEvent event) {
+                // TODO Auto-generated method stub
+                final int action = event.getAction();
+                switch (action) {
+
+                    case DragEvent.ACTION_DRAG_STARTED:
+                        Log.d("gagagagaga", event.getX() + "");
+                        break;
+
+                    case DragEvent.ACTION_DRAG_EXITED:
+                        Log.d("gagagagaga1", event.getX() + "");
+                        break;
+
+                    case DragEvent.ACTION_DRAG_ENTERED:
+                        Log.d("gagagagaga2", event.getX() + "");
+                        break;
+
+                    case DragEvent.ACTION_DROP:
+                        x = event.getX();
+                        y = event.getY();
+                        editText.setX(x - editText.getWidth() / 2);
+                        editText.setY(y - editText.getHeight() / 2);
+                        Log.d("gagagagaga3", event.getX() + "");
+                        break;
+
+                    case DragEvent.ACTION_DRAG_ENDED:
+                        Log.d("gagagagaga", event.getX() + "");
+                        break;
+
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+
+    }
+
+    public static Context getContext() {
+        return context;
     }
 
     @Override
@@ -162,7 +230,9 @@ public class ImageEditActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+
             saveImage();
+
             return true;
         }
 
@@ -187,7 +257,17 @@ public class ImageEditActivity extends ActionBarActivity {
                 File file = new File(myDir, fileName);
 
                 Bitmap bitmap = cropImageView.getVisibleRectangleBitmap();
+
+                if (editText.getVisibility() == View.VISIBLE && !editText.getText().toString().equals("")) {
+
+                    editText.setDrawingCacheEnabled(true);
+                    Bitmap b = editText.getDrawingCache();
+                    Canvas canvas = new Canvas(bitmap);
+                    canvas.drawBitmap(b, editText.getX(), editText.getY(), null);
+                }
+
                 bitmap = Utils.scaleCenterCrop(bitmap, 720, 720);
+
                 FileOutputStream out = null;
                 try {
                     out = new FileOutputStream(file);
@@ -195,7 +275,7 @@ public class ImageEditActivity extends ActionBarActivity {
                     e.printStackTrace();
                 }
 
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                 try {
                     out.flush();
                     out.close();
@@ -216,10 +296,23 @@ public class ImageEditActivity extends ActionBarActivity {
         Toast.makeText(getApplicationContext(), "Image Saved", Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    View.OnTouchListener myTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
 
-    }
+            Bitmap bitmap = cropImageView.getDrawingCache();
+            Canvas canvas = new Canvas(bitmap);
+
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+            Bitmap stickerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon, options);
+            canvas.drawBitmap(stickerBitmap, null, new Rect((int) motionEvent.getX() - 75, (int) motionEvent.getY() - 75, (int) motionEvent.getX() + 75, (int) motionEvent.getY() + 75), null);
+            cropImageView.setImageBitmap(bitmap);
+            cropImageCorner.setOnTouchListener(null);
+
+            return false;
+        }
+    };
 
 }
