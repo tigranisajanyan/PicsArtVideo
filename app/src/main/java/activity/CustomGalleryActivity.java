@@ -2,19 +2,14 @@ package activity;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.TypedArray;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.PersistableBundle;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -54,10 +49,10 @@ public class CustomGalleryActivity extends ActionBarActivity {
     }
 
     private void init() {
-        
+
         getSupportActionBar().setTitle("PicsArtVideo");
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
-        customGalleryAdapter = new CustomGalleryAdapter(customGalleryArrayList, this,getSupportActionBar());
+        customGalleryAdapter = new CustomGalleryAdapter(customGalleryArrayList, this, getSupportActionBar());
 
         recyclerView = (RecyclerView) findViewById(R.id.gallery_rec_view);
         staggeredGridLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
@@ -86,7 +81,7 @@ public class CustomGalleryActivity extends ActionBarActivity {
                     fragmentTransaction.commit();
                     fragmentIsOpen = true;
 
-                    multiSelectFragment.setmAdapter(customGalleryAdapter.getSelected(),fragmentManager);
+                    //multiSelectFragment.setAdapter(customGalleryAdapter.getSelected(), fragmentManager, multiSelectFragment);
 
 
                 } else {
@@ -98,7 +93,7 @@ public class CustomGalleryActivity extends ActionBarActivity {
                     fragmentTransaction.commit();
                     fragmentIsOpen = false;
 
-                    //multiSelectFragment.setmAdapter(new ArrayList<CharSequence>());
+                    //multiSelectFragment.setAdapter(new ArrayList<CharSequence>());
 
                 }
             }

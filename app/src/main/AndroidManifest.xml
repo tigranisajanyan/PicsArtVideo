@@ -31,10 +31,12 @@
         </activity>
         <activity
             android:name="activity.SlideShowActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_slide_show" >
         </activity>
         <activity
             android:name="activity.ImageEditActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_image_edit" >
         </activity>
         <service android:name="service.MyService" />

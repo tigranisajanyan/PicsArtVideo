@@ -84,13 +84,13 @@ public class PicsArtGalleryActvity extends ActionBarActivity {
                                 new Response.Listener<String>() {
                                     @Override
                                     public void onResponse(String response) {
-                                        JSONArray jsonArray=null;
+                                        JSONArray jsonArray = null;
                                         try {
-                                            jsonArray=new JSONArray(response);
+                                            jsonArray = new JSONArray(response);
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
-                                        for (int i=0;i<jsonArray.length();i++) {
+                                        for (int i = 0; i < jsonArray.length(); i++) {
                                             JSONObject jsonObject = null;
                                             try {
                                                 jsonObject = jsonArray.getJSONObject(i);
@@ -148,13 +148,13 @@ public class PicsArtGalleryActvity extends ActionBarActivity {
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
-                                JSONArray jsonArray=null;
+                                JSONArray jsonArray = null;
                                 try {
-                                    jsonArray=new JSONArray(response);
+                                    jsonArray = new JSONArray(response);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                                for (int i=0;i<jsonArray.length();i++) {
+                                for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject = null;
                                     try {
                                         jsonObject = jsonArray.getJSONObject(i);
@@ -288,7 +288,7 @@ public class PicsArtGalleryActvity extends ActionBarActivity {
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         recyclerView = (RecyclerView) findViewById(R.id.pics_art_rec_view);
 
-        picsArtGalleryAdapter = new PicsArtGalleryAdapter(picsArtGalleryItems, this, width);
+        picsArtGalleryAdapter = new PicsArtGalleryAdapter(picsArtGalleryItems, this, width, getSupportActionBar());
         staggeredGridLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         itemAnimator = new DefaultItemAnimator();
 

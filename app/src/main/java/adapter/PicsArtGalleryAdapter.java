@@ -2,6 +2,7 @@ package adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,9 +34,12 @@ public class PicsArtGalleryAdapter extends RecyclerView.Adapter<PicsArtGalleryAd
     private int width = 0;
     private int height = 0;
 
+    private ActionBar actionBar;
 
-    public PicsArtGalleryAdapter(ArrayList<PicsArtGalleryItem> arr, Context c, int w) {
 
+    public PicsArtGalleryAdapter(ArrayList<PicsArtGalleryItem> arr, Context c, int w, ActionBar actionBar) {
+
+        this.actionBar=actionBar;
         displayWidth = w;
         array = arr;
         context = c;
@@ -56,8 +60,13 @@ public class PicsArtGalleryAdapter extends RecyclerView.Adapter<PicsArtGalleryAd
                 if (array.get(position).getIsLoaded() == true) {
                     if (array.get(position).getIsSeleted()) {
                         array.get(position).setIsSeleted(false);
+                        actionBar.setTitle(getSelected().size() + " Selected");
+                        if (getSelected().size() == 0) {
+                            actionBar.setTitle("PicsArtVideo");
+                        }
                     } else {
                         array.get(position).setIsSeleted(true);
+                        actionBar.setTitle(getSelected().size() + " Selected");
                     }
 
                     holder.select.setSelected(array

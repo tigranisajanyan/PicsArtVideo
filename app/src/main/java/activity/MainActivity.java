@@ -39,16 +39,16 @@ public class MainActivity extends ActionBarActivity {
         editor.clear();
         editor.commit();
 
-
-        Utils.initImageLoader(getApplicationContext());
         init();
 
     }
 
     private void init() {
 
+        Utils.initImageLoader(getApplicationContext());
         ImageLoader.getInstance().clearMemoryCache();
         ImageLoader.getInstance().clearDiskCache();
+
         context = this;
         FileUtils.craeteDir("req_images");
 
@@ -91,4 +91,8 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 }

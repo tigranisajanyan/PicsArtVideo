@@ -12,6 +12,8 @@
     <dimen name="image_width">450dp</dimen>
     <dimen name="image_height">450dp</dimen>
 
-    <dimen name="text_size">50dp</dimen>
+    <dimen name="text_size">45dp</dimen>
+
+
 
 </resources>

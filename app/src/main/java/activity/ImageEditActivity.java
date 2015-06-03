@@ -1,17 +1,16 @@
 package activity;
 
-import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ClipData;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.os.Looper;
 import android.support.v7.app.ActionBarActivity;
@@ -23,13 +22,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.intern.picsartvideo.R;
@@ -43,7 +39,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import uk.co.senab.photoview.PhotoView;
-import utils.Utils;
 
 
 public class ImageEditActivity extends ActionBarActivity {
@@ -67,6 +62,8 @@ public class ImageEditActivity extends ActionBarActivity {
     float x = 0;
     float y = 0;
 
+    int stickerIndex;
+
     private FragmentManager fragmentManager = getFragmentManager();
     private RecyclerViewFragment multiSelectFragment = new RecyclerViewFragment();
     private boolean fragmentIsOpen = false;
@@ -86,6 +83,7 @@ public class ImageEditActivity extends ActionBarActivity {
         context = this;
         SharedPreferences sharedPreferences = getSharedPreferences("pics_art_video", MODE_PRIVATE);
         count = sharedPreferences.getInt("edited_count", 0);
+
         cropImageView = (PhotoView) findViewById(R.id.crop_image_view);
         cropImageCorner = (ImageView) findViewById(R.id.corner_image);
         editText = (EditText) findViewById(R.id.edt_txt);
@@ -149,14 +147,12 @@ public class ImageEditActivity extends ActionBarActivity {
                     fragmentTransaction.commit();
                     fragmentIsOpen = true;
 
-                    ArrayList<CharSequence> charSequences = new ArrayList<CharSequence>();
-                    charSequences.add("gagaga");
-                    charSequences.add("gagagag");
-                    charSequences.add("gagaga");
-                    charSequences.add("gagagag");
-                    charSequences.add("gagaga");
-                    charSequences.add("gagagag");
-                    multiSelectFragment.setmAdapter(charSequences, fragmentManager);
+                    ArrayList<Drawable> bitmaps=new ArrayList<>();
+                    bitmaps.add(getResources().getDrawable(R.drawable.sticker1));
+                    bitmaps.add(getResources().getDrawable(R.drawable.sticker2));
+                    bitmaps.add(getResources().getDrawable(R.drawable.sticker3));
+
+                    multiSelectFragment.setAdapter(bitmaps);
 
                     cropImageCorner.setOnTouchListener(myTouchListener);
 
@@ -184,15 +180,12 @@ public class ImageEditActivity extends ActionBarActivity {
                 switch (action) {
 
                     case DragEvent.ACTION_DRAG_STARTED:
-                        Log.d("gagagagaga", event.getX() + "");
                         break;
 
                     case DragEvent.ACTION_DRAG_EXITED:
-                        Log.d("gagagagaga1", event.getX() + "");
                         break;
 
                     case DragEvent.ACTION_DRAG_ENTERED:
-                        Log.d("gagagagaga2", event.getX() + "");
                         break;
 
                     case DragEvent.ACTION_DROP:
@@ -200,17 +193,32 @@ public class ImageEditActivity extends ActionBarActivity {
                         y = event.getY();
                         editText.setX(x - editText.getWidth() / 2);
                         editText.setY(y - editText.getHeight() / 2);
-                        Log.d("gagagagaga3", event.getX() + "");
+                        //Log.d("gagagagaga3", event.getX() + "");
                         break;
 
                     case DragEvent.ACTION_DRAG_ENDED:
-                        Log.d("gagagagaga", event.getX() + "");
                         break;
 
                     default:
                         break;
                 }
                 return true;
+            }
+        });
+
+        multiSelectFragment.setOnShapeChangedListener(new RecyclerViewFragment.OnStickerChangedListener() {
+            @Override
+            public void onStickerChanged(int shapeIndex) {
+                Log.d("gagagagaga", shapeIndex + "");
+                stickerIndex =shapeIndex;
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_in);
+                fragmentTransaction.remove(multiSelectFragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                fragmentIsOpen = false;
+
+                cropImageCorner.setOnTouchListener(myTouchListener);
             }
         });
 
@@ -266,7 +274,7 @@ public class ImageEditActivity extends ActionBarActivity {
                     canvas.drawBitmap(b, editText.getX(), editText.getY(), null);
                 }
 
-                bitmap = Utils.scaleCenterCrop(bitmap, 720, 720);
+                //bitmap = Utils.scaleCenterCrop(bitmap, 720, 720);
 
                 FileOutputStream out = null;
                 try {
@@ -304,9 +312,27 @@ public class ImageEditActivity extends ActionBarActivity {
             Canvas canvas = new Canvas(bitmap);
 
             BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inScaled = false;
+            options.inDither = false;
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            Bitmap stickerBitmap=null;
+            switch (stickerIndex) {
 
-            Bitmap stickerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon, options);
+                case 0:
+                    stickerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sticker1, options);
+                    break;
+
+                case 1:
+                    stickerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sticker2, options);
+                    break;
+
+                case 2:
+                    stickerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sticker3, options);
+                    break;
+                default:
+                    break;
+            }
+
             canvas.drawBitmap(stickerBitmap, null, new Rect((int) motionEvent.getX() - 75, (int) motionEvent.getY() - 75, (int) motionEvent.getX() + 75, (int) motionEvent.getY() + 75), null);
             cropImageView.setImageBitmap(bitmap);
             cropImageCorner.setOnTouchListener(null);
