@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="1dp"
     tools:context="com.renal128.demo.recyclerviewdemo.activity.PicsArtGallery">
 
     <ProgressBar

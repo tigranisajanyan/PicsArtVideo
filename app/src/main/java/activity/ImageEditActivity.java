@@ -1,9 +1,12 @@
 package activity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -18,10 +21,14 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -126,11 +133,51 @@ public class ImageEditActivity extends ActionBarActivity {
         addTextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (editText.getVisibility() == View.GONE) {
+                Dialog dialog=new Dialog(ImageEditActivity.getContext(), R.style.Base_V11_Theme_AppCompat_Light_Dialog);
+                LayoutInflater inflater = getLayoutInflater();
+                View layout = inflater.inflate(R.layout.activity_slide_show,null);
+                dialog.setContentView(layout);
+                dialog.show();
+                /*final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                        ImageEditActivity.this,
+                        android.R.layout.select_dialog_item);
+                arrayAdapter.add("White");
+                arrayAdapter.add("Black");
+                arrayAdapter.add("Red");
+                arrayAdapter.add("Yellow");
+                arrayAdapter.add("Green");
+                arrayAdapter.add("Orange");
+                arrayAdapter.add("Grey");
+                arrayAdapter.add("Blue");
+                new AlertDialog.Builder(ImageEditActivity.this)
+                        .setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.d("gagagga", "" + which);
+                            }
+                        })
+                        /*.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .setTitle("Select Color")
+                        .setCancelable(false)
+                        .show();*/
+                /*if (editText.getVisibility() == View.GONE) {
                     editText.setVisibility(View.VISIBLE);
                 } else {
                     editText.setVisibility(View.GONE);
-                }
+                }*/
             }
         });
 
@@ -147,7 +194,7 @@ public class ImageEditActivity extends ActionBarActivity {
                     fragmentTransaction.commit();
                     fragmentIsOpen = true;
 
-                    ArrayList<Drawable> bitmaps=new ArrayList<>();
+                    ArrayList<Drawable> bitmaps = new ArrayList<>();
                     bitmaps.add(getResources().getDrawable(R.drawable.sticker1));
                     bitmaps.add(getResources().getDrawable(R.drawable.sticker2));
                     bitmaps.add(getResources().getDrawable(R.drawable.sticker3));
@@ -209,8 +256,8 @@ public class ImageEditActivity extends ActionBarActivity {
         multiSelectFragment.setOnShapeChangedListener(new RecyclerViewFragment.OnStickerChangedListener() {
             @Override
             public void onStickerChanged(int shapeIndex) {
-                Log.d("gagagagaga", shapeIndex + "");
-                stickerIndex =shapeIndex;
+
+                stickerIndex = shapeIndex;
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_in);
                 fragmentTransaction.remove(multiSelectFragment);
@@ -315,7 +362,7 @@ public class ImageEditActivity extends ActionBarActivity {
             options.inScaled = false;
             options.inDither = false;
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap stickerBitmap=null;
+            Bitmap stickerBitmap = null;
             switch (stickerIndex) {
 
                 case 0:
@@ -333,9 +380,16 @@ public class ImageEditActivity extends ActionBarActivity {
                     break;
             }
 
-            canvas.drawBitmap(stickerBitmap, null, new Rect((int) motionEvent.getX() - 75, (int) motionEvent.getY() - 75, (int) motionEvent.getX() + 75, (int) motionEvent.getY() + 75), null);
+            canvas.drawBitmap(stickerBitmap, null, new Rect((int) motionEvent.getX() - getResources().getInteger(R.integer.size), (int) motionEvent.getY() - getResources().getInteger(R.integer.size),
+                    (int) motionEvent.getX() + getResources().getInteger(R.integer.size), (int) motionEvent.getY() + getResources().getInteger(R.integer.size)), null);
             cropImageView.setImageBitmap(bitmap);
             cropImageCorner.setOnTouchListener(null);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_in);
+            fragmentTransaction.remove(multiSelectFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+            fragmentIsOpen = false;
 
             return false;
         }

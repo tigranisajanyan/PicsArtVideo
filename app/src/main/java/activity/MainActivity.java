@@ -1,6 +1,8 @@
 package activity;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Environment;
@@ -84,7 +86,18 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.info) {
+            AlertDialog.Builder adb = new AlertDialog.Builder(this);
+            adb.setTitle("INFO");
+            adb.setMessage("this is the best ( ha-ha ) slide show aplication in the world");
+            adb.setIcon(android.R.drawable.ic_dialog_info);
+            adb.setNegativeButton("close", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            adb.show();
             return true;
         }
 

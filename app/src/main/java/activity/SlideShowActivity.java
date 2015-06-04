@@ -14,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -98,7 +99,7 @@ public class SlideShowActivity extends ActionBarActivity {
         viewPager.setLayoutParams(layoutParams);
         imagePagerAdapter = new ImagePagerAdapter(selectedImagesPathList, SlideShowActivity.this, recyclerView);
         viewPager.setAdapter(imagePagerAdapter);
-        //viewPager.setOffscreenPageLimit(selectedImagesPathList.size());
+        viewPager.setOffscreenPageLimit(100);
 
         slideShowAdapter = new SlideShowAdapter(selectedImagesPathList, this, viewPager, imagePagerAdapter);
         staggeredGridLayoutManager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL);
@@ -129,6 +130,7 @@ public class SlideShowActivity extends ActionBarActivity {
             public void onClick(View view) {
                 if (playButtonIsSelected == false) {
                     playButtonIsSelected = true;
+                    viewPager.scrollTo(0,0);
                     slideShow = new SlideShow();
                     slideShow.execute();
 
@@ -225,6 +227,7 @@ public class SlideShowActivity extends ActionBarActivity {
     }
 
     private class SlideShow extends AsyncTask<Void, Integer, Void> {
+
         protected Void doInBackground(Void... path) {
 
             for (int i = 0; i < selectedImagesPathList.size(); i++) {
@@ -238,10 +241,9 @@ public class SlideShowActivity extends ActionBarActivity {
                         @Override
                         public void run() {
                             staggeredGridLayoutManager.scrollToPositionWithOffset(finalI + 1, finalJ * 2);
-                            //recyclerView.smoothScrollToPosition(finalI);
-                            viewPager.setCurrentItem(finalI, true);
-                            //viewPager.scrollBy(9,0);
-
+                            if (finalI < selectedImagesPathList.size() - 1) {
+                                viewPager.scrollBy(9, 0);
+                            }
                         }
                     });
                     try {
@@ -250,7 +252,6 @@ public class SlideShowActivity extends ActionBarActivity {
                         e.printStackTrace();
                     }
                 }
-
             }
             playButtonIsSelected = false;
             return null;

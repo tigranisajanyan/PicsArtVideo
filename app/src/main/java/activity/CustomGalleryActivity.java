@@ -63,6 +63,8 @@ public class CustomGalleryActivity extends ActionBarActivity {
         recyclerView.setLayoutManager(staggeredGridLayoutManager);
         recyclerView.setItemAnimator(itemAnimator);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         recyclerView.setAdapter(customGalleryAdapter);
         recyclerView.addItemDecoration(new SpacesItemDecoration(2));
 

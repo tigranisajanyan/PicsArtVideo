@@ -4,8 +4,8 @@
 
     <ImageView
         android:id="@+id/ic"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="@dimen/sticker_size"
+        android:layout_height="@dimen/sticker_size"
         android:background="@color/background_material_light" />
 
 </RelativeLayout>

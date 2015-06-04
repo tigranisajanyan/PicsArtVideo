@@ -79,12 +79,12 @@ public class MyService extends Service {
 
                 for (int i = 0; i < paths.length; i++) {
 
-                    if (paths[i].contains("req_images")) {
+                    /*if (paths[i].contains("req_images")) {
                         File from = new File(myDir, paths[i].substring(paths[i].lastIndexOf("/")));
                         String fname = "image_" + String.format("%03d", i) + ".jpg";
                         File to = new File(myDir, fname);
                         from.renameTo(to);
-                    } else {
+                    } else {*/
                         String fname = "image_" + String.format("%03d", i) + ".jpg";
 
                         try {
@@ -105,12 +105,16 @@ public class MyService extends Service {
                                 bitmap = Utils.scaleCenterCrop(bitmap, 720, 720);
                             } else {
                                 bitmap = ImageLoader.getInstance().loadImageSync("file://"+path, new ImageSize(720, 720), DisplayImageOptions.createSimple());
-                                //bitmap = Utils.currectlyOrientation(path);
                                 bitmap = Utils.scaleCenterCrop(bitmap, 720, 720);
                             }
 
+                            if (paths[i].contains("req_images")){
+                                File file1=new File(myDir,paths[i].substring(paths[i].lastIndexOf("/")));
+                                file1.delete();
+                            }
+
                             FileOutputStream out = new FileOutputStream(file);
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                             out.flush();
                             out.close();
                             bitmap.recycle();
@@ -120,7 +124,7 @@ public class MyService extends Service {
                             Toast.makeText(getApplicationContext(), "Error while SaveToMemory", Toast.LENGTH_SHORT).show();
                         }
                     }
-                }
+               // }
                 stopSelf();
             }
         }).start();
