@@ -21,15 +21,12 @@
             android:layout_height="wrap_content"
             android:background="@drawable/corner" />
 
-        <EditText
-            android:id="@+id/edt_txt"
+        <TextView
+            android:layout_gravity="center"
+            android:id="@+id/text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@android:color/transparent"
-            android:cursorVisible="false"
             android:drawingCacheQuality="high"
-            android:hint="enter text "
             android:inputType="textNoSuggestions"
             android:textColor="#0192E6"
             android:textSize="@dimen/text_size"

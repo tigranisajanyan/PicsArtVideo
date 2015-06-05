@@ -94,7 +94,6 @@ public class ImagePagerAdapter extends PagerAdapter {
             }
         });
 
-        //recyclerView.smoothScrollToPosition(position);
         ((ViewPager) container).addView(frameLayout, 0);
         return frameLayout;
     }

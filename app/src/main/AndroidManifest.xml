@@ -23,12 +23,10 @@
         </activity>
         <activity
             android:name="activity.PicsArtGalleryActvity"
-            android:label="@string/title_activity_pics_art_gallery_actvity"
-            android:parentActivityName="activity.MainActivity"></activity>
+            android:label="@string/title_activity_pics_art_gallery_actvity"></activity>
         <activity
             android:name="activity.CustomGalleryActivity"
-            android:label="@string/title_activity_custom_gallery"
-            android:parentActivityName="activity.MainActivity"></activity>
+            android:label="@string/title_activity_custom_gallery"></activity>
         <activity
             android:name="activity.SlideShowActivity"
             android:label="@string/title_activity_slide_show"

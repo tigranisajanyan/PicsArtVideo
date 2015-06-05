@@ -1,7 +1,5 @@
 package activity;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -32,9 +30,6 @@ public class CustomGalleryActivity extends ActionBarActivity {
     private StaggeredGridLayoutManager staggeredGridLayoutManager;
     private RecyclerView.ItemAnimator itemAnimator;
     private ProgressBar progressBar;
-    private FragmentManager fragmentManager = getFragmentManager();
-    private RecyclerViewFragment multiSelectFragment = new RecyclerViewFragment();
-    private boolean fragmentIsOpen = false;
 
     private CustomGalleryAdapter customGalleryAdapter;
     private ArrayList<CustomGalleryItem> customGalleryArrayList = new ArrayList<>();
@@ -63,7 +58,7 @@ public class CustomGalleryActivity extends ActionBarActivity {
         recyclerView.setLayoutManager(staggeredGridLayoutManager);
         recyclerView.setItemAnimator(itemAnimator);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         recyclerView.setAdapter(customGalleryAdapter);
         recyclerView.addItemDecoration(new SpacesItemDecoration(2));
@@ -74,30 +69,7 @@ public class CustomGalleryActivity extends ActionBarActivity {
             @Override
             public void onClick(View view) {
 
-                if (fragmentIsOpen == false) {
-
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.setCustomAnimations(R.anim.slide_out, R.anim.slide_out);
-                    fragmentTransaction.add(R.id.frgmCont, multiSelectFragment);
-                    fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
-                    fragmentIsOpen = true;
-
-                    //multiSelectFragment.setAdapter(customGalleryAdapter.getSelected(), fragmentManager, multiSelectFragment);
-
-
-                } else {
-
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_in);
-                    fragmentTransaction.remove(multiSelectFragment);
-                    fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
-                    fragmentIsOpen = false;
-
-                    //multiSelectFragment.setAdapter(new ArrayList<CharSequence>());
-
-                }
+                Toast.makeText(CustomGalleryActivity.this,"Gorisi tti arax",Toast.LENGTH_LONG).show();
             }
         });
 
@@ -110,7 +82,6 @@ public class CustomGalleryActivity extends ActionBarActivity {
         getMenuInflater().inflate(R.menu.menu_custom_gallery, menu);
         return true;
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

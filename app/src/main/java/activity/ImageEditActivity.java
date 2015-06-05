@@ -1,17 +1,16 @@
 package activity;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ClipData;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
@@ -19,20 +18,15 @@ import android.os.Looper;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.DragEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.RotateAnimation;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.intern.picsartvideo.R;
@@ -59,18 +53,17 @@ public class ImageEditActivity extends ActionBarActivity {
 
     private PhotoView cropImageView;
     private ImageView cropImageCorner;
-    private EditText editText;
+    private TextView textView;
     private Button rotateButton;
     private Button addStickerButton;
     private Button addTextButton;
     private Intent intent;
     private String fileName;
     private int count = 0;
-    float x = 0;
-    float y = 0;
 
-    int stickerIndex;
+    private int stickerIndex;
 
+    private EditTextDialod editTextDialod;
     private FragmentManager fragmentManager = getFragmentManager();
     private RecyclerViewFragment multiSelectFragment = new RecyclerViewFragment();
     private boolean fragmentIsOpen = false;
@@ -93,7 +86,7 @@ public class ImageEditActivity extends ActionBarActivity {
 
         cropImageView = (PhotoView) findViewById(R.id.crop_image_view);
         cropImageCorner = (ImageView) findViewById(R.id.corner_image);
-        editText = (EditText) findViewById(R.id.edt_txt);
+        textView = (TextView) findViewById(R.id.text_view);
         rotateButton = (Button) findViewById(R.id.rotate_button);
         addStickerButton = (Button) findViewById(R.id.add_sticker_button);
         addTextButton = (Button) findViewById(R.id.add_text_button);
@@ -107,10 +100,10 @@ public class ImageEditActivity extends ActionBarActivity {
 
         intent = getIntent();
 
-        editText.setOnLongClickListener(new View.OnLongClickListener() {
+        textView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                editText.startDrag(ClipData.newPlainText("", ""), new View.DragShadowBuilder(editText), null, 0);
+                textView.startDrag(ClipData.newPlainText("", ""), new View.DragShadowBuilder(textView), null, 0);
                 return false;
             }
         });
@@ -133,51 +126,42 @@ public class ImageEditActivity extends ActionBarActivity {
         addTextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Dialog dialog=new Dialog(ImageEditActivity.getContext(), R.style.Base_V11_Theme_AppCompat_Light_Dialog);
-                LayoutInflater inflater = getLayoutInflater();
-                View layout = inflater.inflate(R.layout.activity_slide_show,null);
-                dialog.setContentView(layout);
-                dialog.show();
-                /*final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                        ImageEditActivity.this,
-                        android.R.layout.select_dialog_item);
-                arrayAdapter.add("White");
-                arrayAdapter.add("Black");
-                arrayAdapter.add("Red");
-                arrayAdapter.add("Yellow");
-                arrayAdapter.add("Green");
-                arrayAdapter.add("Orange");
-                arrayAdapter.add("Grey");
-                arrayAdapter.add("Blue");
-                new AlertDialog.Builder(ImageEditActivity.this)
-                        .setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                editTextDialod = new EditTextDialod(ImageEditActivity.getContext());
+                editTextDialod.show();
 
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Log.d("gagagga", "" + which);
-                            }
-                        })
-                        /*.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        })
-                        .setTitle("Select Color")
-                        .setCancelable(false)
-                        .show();*/
-                /*if (editText.getVisibility() == View.GONE) {
-                    editText.setVisibility(View.VISIBLE);
-                } else {
-                    editText.setVisibility(View.GONE);
-                }*/
+                editTextDialod.setOnShapeChangedListener(new EditTextDialod.OnRadioGroupChangedListener() {
+                    @Override
+                    public void onRadioGroupChanged(int shapeIndex, int colorIndex, String s) {
+                        switch (shapeIndex) {
+                            case 0:
+                                textView.setTextSize(20);
+                                break;
+                            case 1:
+                                textView.setTextSize(30);
+                                break;
+                            case 2:
+                                textView.setTextSize(50);
+                                break;
+                            default:
+                                break;
+                        }
+                        switch (colorIndex) {
+                            case 0:
+                                textView.setTextColor(Color.parseColor("#0192E6"));
+                                break;
+                            case 1:
+                                textView.setTextColor(Color.RED);
+                                break;
+                            case 2:
+                                textView.setTextColor(Color.GREEN);
+                                break;
+                            default:
+                                break;
+                        }
+                        textView.setText(s);
+                        textView.setVisibility(View.VISIBLE);
+                    }
+                });
             }
         });
 
@@ -222,7 +206,7 @@ public class ImageEditActivity extends ActionBarActivity {
 
             @Override
             public boolean onDrag(View v, DragEvent event) {
-                // TODO Auto-generated method stub
+
                 final int action = event.getAction();
                 switch (action) {
 
@@ -236,11 +220,8 @@ public class ImageEditActivity extends ActionBarActivity {
                         break;
 
                     case DragEvent.ACTION_DROP:
-                        x = event.getX();
-                        y = event.getY();
-                        editText.setX(x - editText.getWidth() / 2);
-                        editText.setY(y - editText.getHeight() / 2);
-                        //Log.d("gagagagaga3", event.getX() + "");
+                        textView.setX(event.getX() - textView.getWidth() / 2);
+                        textView.setY(event.getY() - textView.getHeight() / 2);
                         break;
 
                     case DragEvent.ACTION_DRAG_ENDED:
@@ -266,6 +247,13 @@ public class ImageEditActivity extends ActionBarActivity {
                 fragmentIsOpen = false;
 
                 cropImageCorner.setOnTouchListener(myTouchListener);
+            }
+        });
+
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editTextDialod.show();
             }
         });
 
@@ -313,15 +301,13 @@ public class ImageEditActivity extends ActionBarActivity {
 
                 Bitmap bitmap = cropImageView.getVisibleRectangleBitmap();
 
-                if (editText.getVisibility() == View.VISIBLE && !editText.getText().toString().equals("")) {
+                if (textView.getVisibility() == View.VISIBLE && !textView.getText().toString().equals("")) {
 
-                    editText.setDrawingCacheEnabled(true);
-                    Bitmap b = editText.getDrawingCache();
+                    textView.setDrawingCacheEnabled(true);
+                    Bitmap b = textView.getDrawingCache();
                     Canvas canvas = new Canvas(bitmap);
-                    canvas.drawBitmap(b, editText.getX(), editText.getY(), null);
+                    canvas.drawBitmap(b, textView.getX(), textView.getY(), null);
                 }
-
-                //bitmap = Utils.scaleCenterCrop(bitmap, 720, 720);
 
                 FileOutputStream out = null;
                 try {
@@ -355,7 +341,7 @@ public class ImageEditActivity extends ActionBarActivity {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
 
-            Bitmap bitmap = cropImageView.getDrawingCache();
+            Bitmap bitmap = cropImageView.getVisibleRectangleBitmap();
             Canvas canvas = new Canvas(bitmap);
 
             BitmapFactory.Options options = new BitmapFactory.Options();

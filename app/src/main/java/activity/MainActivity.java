@@ -89,7 +89,7 @@ public class MainActivity extends ActionBarActivity {
         if (id == R.id.info) {
             AlertDialog.Builder adb = new AlertDialog.Builder(this);
             adb.setTitle("INFO");
-            adb.setMessage("this is the best ( ha-ha ) slide show aplication in the world");
+            adb.setMessage("this is the best ( ha-ha ) slide show application in the world");
             adb.setIcon(android.R.drawable.ic_dialog_info);
             adb.setNegativeButton("close", new DialogInterface.OnClickListener() {
                 @Override
