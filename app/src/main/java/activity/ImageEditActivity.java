@@ -12,12 +12,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.os.Looper;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,6 +33,8 @@ import android.widget.Toast;
 
 import com.example.intern.picsartvideo.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import java.io.File;
@@ -38,8 +42,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 import uk.co.senab.photoview.PhotoView;
+import utils.Utils;
 
 
 public class ImageEditActivity extends ActionBarActivity {
@@ -51,8 +57,7 @@ public class ImageEditActivity extends ActionBarActivity {
     public static final String IMAGE_PATH = "image_path";
     public static final String FILE_PREFIX = "file://";
 
-    private PhotoView cropImageView;
-    private ImageView cropImageCorner;
+    private ImageView editedImageView;
     private TextView textView;
     private Button rotateButton;
     private Button addStickerButton;
@@ -63,6 +68,7 @@ public class ImageEditActivity extends ActionBarActivity {
 
     private int stickerIndex;
 
+    private ImageScaleDialog imageScaleDialog;
     private EditTextDialod editTextDialod;
     private FragmentManager fragmentManager = getFragmentManager();
     private RecyclerViewFragment multiSelectFragment = new RecyclerViewFragment();
@@ -83,22 +89,29 @@ public class ImageEditActivity extends ActionBarActivity {
         context = this;
         SharedPreferences sharedPreferences = getSharedPreferences("pics_art_video", MODE_PRIVATE);
         count = sharedPreferences.getInt("edited_count", 0);
+        intent = getIntent();
 
-        cropImageView = (PhotoView) findViewById(R.id.crop_image_view);
-        cropImageCorner = (ImageView) findViewById(R.id.corner_image);
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        final int width = displaymetrics.widthPixels;
+
+        editedImageView = (ImageView) findViewById(R.id.edited_image_view);
+        editedImageView.buildDrawingCache();
         textView = (TextView) findViewById(R.id.text_view);
         rotateButton = (Button) findViewById(R.id.rotate_button);
         addStickerButton = (Button) findViewById(R.id.add_sticker_button);
         addTextButton = (Button) findViewById(R.id.add_text_button);
 
-        DisplayMetrics displaymetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        int width = displaymetrics.widthPixels;
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(width, width);
-        cropImageView.setLayoutParams(layoutParams);
-        cropImageCorner.setLayoutParams(layoutParams);
+        editedImageView.setLayoutParams(layoutParams);
 
-        intent = getIntent();
+        String path = intent.getStringExtra(IMAGE_PATH);
+        /*if (intent.getBooleanExtra("isfile", false) == true) {
+            path = FILE_PREFIX + intent.getStringExtra(IMAGE_PATH);
+
+        }*/
+
+        //Log.d("gagaaga",path+"");
 
         textView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -108,58 +121,92 @@ public class ImageEditActivity extends ActionBarActivity {
             }
         });
 
-        String path = intent.getStringExtra(IMAGE_PATH);
-        if (intent.getStringExtra(IMAGE_PATH).contains("storage/emulated")) {
-            path = FILE_PREFIX + intent.getStringExtra(IMAGE_PATH);
+        Bitmap bitmap = Bitmap.createBitmap(width, width, Bitmap.Config.ARGB_8888);
+        bitmap.eraseColor(Color.WHITE);
+
+        Bitmap bitmap1 = BitmapFactory.decodeFile(path);
+        if (bitmap1.getHeight() > bitmap1.getWidth()) {
+
+            bitmap1 = Bitmap.createScaledBitmap(bitmap1, (bitmap1.getWidth() * width) / (bitmap1.getHeight()), width, false);
+            Canvas canvas = new Canvas(bitmap);
+            canvas.drawBitmap(bitmap1, (width - bitmap1.getWidth()) / 2, 0, null);
+
+        } else {
+
+            bitmap1 = Bitmap.createScaledBitmap(bitmap1, width, (bitmap1.getHeight() * width) / (bitmap1.getWidth()), false);
+            Canvas canvas = new Canvas(bitmap);
+            canvas.drawBitmap(bitmap1, 0, (width - bitmap1.getHeight()) / 2, null);
+
         }
 
-        ImageLoader.getInstance().displayImage(path
-                , cropImageView, new SimpleImageLoadingListener());
+        editedImageView.setImageBitmap(bitmap);
 
+
+        //ImageLoader.getInstance().displayImage(path
+        //       , editedImageView, new SimpleImageLoadingListener());
+
+        final String finalPath = path;
         rotateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cropImageView.setRotationBy(90);
+
+                imageScaleDialog = new ImageScaleDialog(ImageEditActivity.getContext(), finalPath, width);
+                imageScaleDialog.show();
+                imageScaleDialog.setOnShapeChangedListener(new ImageScaleDialog.OnShapeChangedListener() {
+                    @Override
+                    public void onShapeChanged(boolean saved, String text) {
+
+                        ImageLoader.getInstance().clearMemoryCache();
+                        ImageLoader.getInstance().clearDiskCache();
+                        ImageLoader.getInstance().displayImage(FILE_PREFIX + text
+                                , editedImageView, new SimpleImageLoadingListener());
+
+                    }
+                });
+
             }
         });
 
         addTextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 editTextDialod = new EditTextDialod(ImageEditActivity.getContext());
                 editTextDialod.show();
-
-                editTextDialod.setOnShapeChangedListener(new EditTextDialod.OnRadioGroupChangedListener() {
+                editTextDialod.setOnRadioGroupChangedListener(new EditTextDialod.OnRadioGroupChangedListener() {
                     @Override
                     public void onRadioGroupChanged(int shapeIndex, int colorIndex, String s) {
-                        switch (shapeIndex) {
-                            case 0:
-                                textView.setTextSize(20);
-                                break;
-                            case 1:
-                                textView.setTextSize(30);
-                                break;
-                            case 2:
-                                textView.setTextSize(50);
-                                break;
-                            default:
-                                break;
+
+                        if (!s.equals("")) {
+                            switch (shapeIndex) {
+                                case 0:
+                                    textView.setTextSize(20);
+                                    break;
+                                case 1:
+                                    textView.setTextSize(30);
+                                    break;
+                                case 2:
+                                    textView.setTextSize(50);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            switch (colorIndex) {
+                                case 0:
+                                    textView.setTextColor(Color.parseColor("#0192E6"));
+                                    break;
+                                case 1:
+                                    textView.setTextColor(Color.RED);
+                                    break;
+                                case 2:
+                                    textView.setTextColor(Color.GREEN);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            textView.setText(s);
+                            textView.setVisibility(View.VISIBLE);
                         }
-                        switch (colorIndex) {
-                            case 0:
-                                textView.setTextColor(Color.parseColor("#0192E6"));
-                                break;
-                            case 1:
-                                textView.setTextColor(Color.RED);
-                                break;
-                            case 2:
-                                textView.setTextColor(Color.GREEN);
-                                break;
-                            default:
-                                break;
-                        }
-                        textView.setText(s);
-                        textView.setVisibility(View.VISIBLE);
                     }
                 });
             }
@@ -185,7 +232,7 @@ public class ImageEditActivity extends ActionBarActivity {
 
                     multiSelectFragment.setAdapter(bitmaps);
 
-                    cropImageCorner.setOnTouchListener(myTouchListener);
+                    editedImageView.setOnTouchListener(myTouchListener);
 
                 } else {
 
@@ -196,13 +243,13 @@ public class ImageEditActivity extends ActionBarActivity {
                     fragmentTransaction.commit();
                     fragmentIsOpen = false;
 
-                    cropImageCorner.setOnTouchListener(null);
+                    editedImageView.setOnTouchListener(null);
 
                 }
             }
         });
 
-        cropImageView.setOnDragListener(new View.OnDragListener() {
+        editedImageView.setOnDragListener(new View.OnDragListener() {
 
             @Override
             public boolean onDrag(View v, DragEvent event) {
@@ -246,7 +293,7 @@ public class ImageEditActivity extends ActionBarActivity {
                 fragmentTransaction.commit();
                 fragmentIsOpen = false;
 
-                cropImageCorner.setOnTouchListener(myTouchListener);
+                editedImageView.setOnTouchListener(myTouchListener);
             }
         });
 
@@ -299,13 +346,15 @@ public class ImageEditActivity extends ActionBarActivity {
 
                 File file = new File(myDir, fileName);
 
-                Bitmap bitmap = cropImageView.getVisibleRectangleBitmap();
+
+                Bitmap bitmap = ((BitmapDrawable) editedImageView.getDrawable()).getBitmap();
+                Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
 
                 if (textView.getVisibility() == View.VISIBLE && !textView.getText().toString().equals("")) {
 
                     textView.setDrawingCacheEnabled(true);
                     Bitmap b = textView.getDrawingCache();
-                    Canvas canvas = new Canvas(bitmap);
+                    Canvas canvas = new Canvas(mutableBitmap);
                     canvas.drawBitmap(b, textView.getX(), textView.getY(), null);
                 }
 
@@ -316,7 +365,7 @@ public class ImageEditActivity extends ActionBarActivity {
                     e.printStackTrace();
                 }
 
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                mutableBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                 try {
                     out.flush();
                     out.close();
@@ -341,8 +390,9 @@ public class ImageEditActivity extends ActionBarActivity {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
 
-            Bitmap bitmap = cropImageView.getVisibleRectangleBitmap();
-            Canvas canvas = new Canvas(bitmap);
+            Bitmap bitmap = ((BitmapDrawable) editedImageView.getDrawable()).getBitmap();
+            Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+            Canvas canvas = new Canvas(mutableBitmap);
 
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inScaled = false;
@@ -366,10 +416,11 @@ public class ImageEditActivity extends ActionBarActivity {
                     break;
             }
 
-            canvas.drawBitmap(stickerBitmap, null, new Rect((int) motionEvent.getX() - getResources().getInteger(R.integer.size), (int) motionEvent.getY() - getResources().getInteger(R.integer.size),
-                    (int) motionEvent.getX() + getResources().getInteger(R.integer.size), (int) motionEvent.getY() + getResources().getInteger(R.integer.size)), null);
-            cropImageView.setImageBitmap(bitmap);
-            cropImageCorner.setOnTouchListener(null);
+            canvas.drawBitmap(stickerBitmap, null, new Rect((int) motionEvent.getX() - 50, (int) motionEvent.getY() - 50,
+                    (int) motionEvent.getX() + 50, (int) motionEvent.getY() + 50), null);
+            Log.d("gagagagaga", motionEvent.getX() + "   /   " + motionEvent.getY());
+            editedImageView.setImageBitmap(mutableBitmap);
+            editedImageView.setOnTouchListener(null);
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_in);
             fragmentTransaction.remove(multiSelectFragment);

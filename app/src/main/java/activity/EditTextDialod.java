@@ -32,6 +32,7 @@ public class EditTextDialod extends Dialog {
         setContentView(R.layout.edit_text_dialog);
 
         editText=(EditText)findViewById(R.id.edt_txt_dialog);
+
         radioGroupSize = (RadioGroup) findViewById(R.id.radio_group_size);
         radioGroupColor = (RadioGroup) findViewById(R.id.radio_group_color);
         setButton=(Button)findViewById(R.id.set_button);
@@ -45,7 +46,6 @@ public class EditTextDialod extends Dialog {
                     int radioButtonID = radioGroupSize.getCheckedRadioButtonId();
                     View radioButton = radioGroupSize.findViewById(radioButtonID);
                     int idx = radioGroupSize.indexOfChild(radioButton);
-
                     onRadioGroupChangedListener.onRadioGroupChanged(idx, radioGroupColor.indexOfChild(radioGroupColor.findViewById(radioGroupColor.getCheckedRadioButtonId())), editText.getText().toString());
                 }
                 dismiss();
@@ -67,13 +67,13 @@ public class EditTextDialod extends Dialog {
     }
 
 
-    public void setOnShapeChangedListener(OnRadioGroupChangedListener l) {
+    public void setOnRadioGroupChangedListener(OnRadioGroupChangedListener l) {
         onRadioGroupChangedListener = l;
     }
 
 
-    public static interface OnRadioGroupChangedListener {
-        public void onRadioGroupChanged(int shapeIndex, int colorIndex, String text);
+    public interface OnRadioGroupChangedListener {
+        void onRadioGroupChanged(int shapeIndex, int colorIndex, String text);
     }
 
 }

@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.intern.picsartvideo.R;
 import com.melnykov.fab.FloatingActionButton;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 

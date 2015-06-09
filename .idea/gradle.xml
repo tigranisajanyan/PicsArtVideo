@@ -9,7 +9,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/CropperSample" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/cropper" />
             <option value="$PROJECT_DIR$/fab_library" />
             <option value="$PROJECT_DIR$/library" />
           </set>

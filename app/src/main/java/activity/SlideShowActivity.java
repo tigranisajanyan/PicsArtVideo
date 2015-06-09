@@ -62,6 +62,7 @@ public class SlideShowActivity extends ActionBarActivity {
 
     private static final String root = Environment.getExternalStorageDirectory().toString();
     private File myDir = new File(root + "/req_images");
+    double halfWidth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +79,9 @@ public class SlideShowActivity extends ActionBarActivity {
             }
             selectedImagesPathList.add(slideShowItem);
         }
+
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        halfWidth = metrics.widthPixels;
 
         init();
 
@@ -242,8 +246,9 @@ public class SlideShowActivity extends ActionBarActivity {
                         public void run() {
                             staggeredGridLayoutManager.scrollToPositionWithOffset(finalI + 1, finalJ * 2);
                             if (finalI < selectedImagesPathList.size() - 1) {
-                                viewPager.scrollBy(9, 0);
+                                viewPager.scrollBy((int) (halfWidth/80), 0);
                             }
+                            //viewPager.setCurrentItem(finalI);
                         }
                     });
                     try {

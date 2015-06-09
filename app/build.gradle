@@ -30,7 +30,7 @@ dependencies {
     compile files('libs/library-1.0.11.jar')
     compile files('libs/picsartSDK.jar')
     compile files('libs/universal-image-loader-1.9.3.jar')
-    compile files('libs/picasso-2.5.2.jar')
     compile project(':library')
     compile project(':fab_library')
+    compile project(':cropper')
 }

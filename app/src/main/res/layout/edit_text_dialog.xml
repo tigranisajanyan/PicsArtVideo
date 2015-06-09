@@ -11,21 +11,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:hint="enter text"
-        android:padding="20dp" />
+        android:layout_marginTop="20dp"
+        android:hint="enter text" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="20dp"
+        android:text="Text Size" />
 
     <RadioGroup
         android:id="@+id/radio_group_size"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="20dp">
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal">
 
         <RadioButton
             android:id="@+id/radio_button_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1X" />
+            android:text="Small" />
 
         <RadioButton
             android:id="@+id/radio_button_2"
@@ -33,22 +40,29 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:checked="true"
-            android:text="1.5X" />
+            android:text="Normal" />
 
         <RadioButton
             android:id="@+id/radio_button_3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
-            android:text="2x" />
+            android:text="Large" />
     </RadioGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="20dp"
+        android:text="Text Color" />
 
     <RadioGroup
         android:id="@+id/radio_group_color"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="20dp">
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal">
 
 
         <RadioButton

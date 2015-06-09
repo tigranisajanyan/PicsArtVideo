@@ -222,6 +222,9 @@ public class FileUtils {
             myDir.mkdirs();
         } else {
             clearDir(myDir);
+            File file = new File(myDir.toString());
+            file.delete();
+            myDir.mkdirs();
         }
     }
 

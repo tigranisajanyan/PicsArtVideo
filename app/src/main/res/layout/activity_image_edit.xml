@@ -9,14 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <uk.co.senab.photoview.PhotoView
-            android:id="@+id/crop_image_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/white" />
-
         <ImageView
-            android:id="@+id/corner_image"
+            android:id="@+id/edited_image_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/corner" />
@@ -24,6 +18,7 @@
         <TextView
             android:layout_gravity="center"
             android:id="@+id/text_view"
+            android:lines="5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawingCacheQuality="high"
@@ -46,7 +41,7 @@
             android:id="@+id/rotate_button"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/button_height"
-            android:text="rotate"
+            android:text="rotate/scale"
             android:textColor="#0192E6" />
 
         <Button
