@@ -13,16 +13,18 @@
             android:id="@+id/edited_image_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/corner" />
+            android:background="@drawable/border" />
 
         <TextView
-            android:layout_gravity="center"
             android:id="@+id/text_view"
-            android:lines="5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/border"
             android:drawingCacheQuality="high"
             android:inputType="textNoSuggestions"
+            android:lines="3"
+            android:padding="10dp"
             android:textColor="#0192E6"
             android:textSize="@dimen/text_size"
             android:visibility="gone" />

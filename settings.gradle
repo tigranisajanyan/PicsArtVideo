@@ -1,1 +1,1 @@
-include ':app', ':library', ':fab_library', ':cropper', ':CropperSample'
+include ':app', ':fab_library', ':cropper', ':CropperSample'

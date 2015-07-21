@@ -16,6 +16,6 @@
 
     <dimen name="sticker_size">100dp</dimen>
 
-
+    <dimen name="scale_image_size">700dp</dimen>
 
 </resources>

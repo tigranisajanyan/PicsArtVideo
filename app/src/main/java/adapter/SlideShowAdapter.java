@@ -3,7 +3,6 @@ package adapter;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,7 +14,6 @@ import android.os.Environment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -35,6 +33,7 @@ import utils.Utils;
 
 public class SlideShowAdapter extends RecyclerView.Adapter<SlideShowAdapter.ViewHolder> {
 
+    public static final String FILE_PREFIX = "file://";
     public static final int REQUEST_CODE = 300;
     private static final String root = Environment.getExternalStorageDirectory().toString();
     private File myDir = new File(root + "/req_images");
@@ -73,7 +72,7 @@ public class SlideShowAdapter extends RecyclerView.Adapter<SlideShowAdapter.View
 
         String path = arrayList.get(position).getPath();
         if (arrayList.get(position).isFromFileSystem()) {
-            path = "file://" + arrayList.get(position).getPath();
+            path = FILE_PREFIX + arrayList.get(position).getPath();
         }
 
         try {
@@ -153,16 +152,6 @@ public class SlideShowAdapter extends RecyclerView.Adapter<SlideShowAdapter.View
 
                 }
             });
-
-            /*slideShowImage.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    ClipData data = ClipData.newPlainText("", "");
-                    View.DragShadowBuilder shadow = new View.DragShadowBuilder(slideShowImage);
-                    v.startDrag(data, shadow, null, 0);
-                    return false;
-                }
-            });*/
         }
 
         DialogInterface.OnClickListener myClickListener = new DialogInterface.OnClickListener() {

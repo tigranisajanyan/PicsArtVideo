@@ -71,6 +71,7 @@ public class CustomGalleryActivity extends ActionBarActivity {
             public void onClick(View view) {
 
                 Toast.makeText(CustomGalleryActivity.this,"Gorisi tti arax",Toast.LENGTH_LONG).show();
+                recyclerView.smoothScrollToPosition(0);
             }
         });
 

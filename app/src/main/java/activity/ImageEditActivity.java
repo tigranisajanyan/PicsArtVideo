@@ -28,13 +28,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.intern.picsartvideo.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import java.io.File;
@@ -42,10 +42,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Random;
-
-import uk.co.senab.photoview.PhotoView;
-import utils.Utils;
 
 
 public class ImageEditActivity extends ActionBarActivity {
@@ -65,8 +61,10 @@ public class ImageEditActivity extends ActionBarActivity {
     private Intent intent;
     private String fileName;
     private int count = 0;
+    private String path;
 
     private int stickerIndex;
+    private boolean isFile = false;
 
     private ImageScaleDialog imageScaleDialog;
     private EditTextDialod editTextDialod;
@@ -105,13 +103,15 @@ public class ImageEditActivity extends ActionBarActivity {
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(width, width);
         editedImageView.setLayoutParams(layoutParams);
 
-        String path = intent.getStringExtra(IMAGE_PATH);
-        /*if (intent.getBooleanExtra("isfile", false) == true) {
-            path = FILE_PREFIX + intent.getStringExtra(IMAGE_PATH);
+        isFile = intent.getBooleanExtra("isfile", false);
 
-        }*/
-
-        //Log.d("gagaaga",path+"");
+        Bitmap imageBitmap;
+        path = intent.getStringExtra(IMAGE_PATH);
+        if (isFile) {
+            imageBitmap = ImageLoader.getInstance().loadImageSync(FILE_PREFIX + path);
+        } else {
+            imageBitmap = ImageLoader.getInstance().loadImageSync(path);
+        }
 
         textView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -124,46 +124,43 @@ public class ImageEditActivity extends ActionBarActivity {
         Bitmap bitmap = Bitmap.createBitmap(width, width, Bitmap.Config.ARGB_8888);
         bitmap.eraseColor(Color.WHITE);
 
-        Bitmap bitmap1 = BitmapFactory.decodeFile(path);
-        if (bitmap1.getHeight() > bitmap1.getWidth()) {
+        if (imageBitmap.getHeight() > imageBitmap.getWidth()) {
 
-            bitmap1 = Bitmap.createScaledBitmap(bitmap1, (bitmap1.getWidth() * width) / (bitmap1.getHeight()), width, false);
+            imageBitmap = Bitmap.createScaledBitmap(imageBitmap, (imageBitmap.getWidth() * width) / (imageBitmap.getHeight()), width, false);
             Canvas canvas = new Canvas(bitmap);
-            canvas.drawBitmap(bitmap1, (width - bitmap1.getWidth()) / 2, 0, null);
+            canvas.drawBitmap(imageBitmap, (width - imageBitmap.getWidth()) / 2, 0, null);
 
         } else {
 
-            bitmap1 = Bitmap.createScaledBitmap(bitmap1, width, (bitmap1.getHeight() * width) / (bitmap1.getWidth()), false);
+            imageBitmap = Bitmap.createScaledBitmap(imageBitmap, width, (imageBitmap.getHeight() * width) / (imageBitmap.getWidth()), false);
             Canvas canvas = new Canvas(bitmap);
-            canvas.drawBitmap(bitmap1, 0, (width - bitmap1.getHeight()) / 2, null);
+            canvas.drawBitmap(imageBitmap, 0, (width - imageBitmap.getHeight()) / 2, null);
 
         }
 
         editedImageView.setImageBitmap(bitmap);
 
-
-        //ImageLoader.getInstance().displayImage(path
-        //       , editedImageView, new SimpleImageLoadingListener());
-
-        final String finalPath = path;
         rotateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                imageScaleDialog = new ImageScaleDialog(ImageEditActivity.getContext(), finalPath, width);
+
+                Bitmap bitmap = ((BitmapDrawable) editedImageView.getDrawable()).getBitmap();
+                imageScaleDialog = new ImageScaleDialog(ImageEditActivity.getContext(), path, width, isFile, bitmap);
                 imageScaleDialog.show();
                 imageScaleDialog.setOnShapeChangedListener(new ImageScaleDialog.OnShapeChangedListener() {
                     @Override
-                    public void onShapeChanged(boolean saved, String text) {
+                    public void onShapeChanged(boolean saved, String path1) {
 
+                        isFile = true;
                         ImageLoader.getInstance().clearMemoryCache();
                         ImageLoader.getInstance().clearDiskCache();
-                        ImageLoader.getInstance().displayImage(FILE_PREFIX + text
+                        ImageLoader.getInstance().displayImage(FILE_PREFIX + path1
                                 , editedImageView, new SimpleImageLoadingListener());
+                        path = path1;
 
                     }
                 });
-
             }
         });
 
@@ -171,44 +168,49 @@ public class ImageEditActivity extends ActionBarActivity {
             @Override
             public void onClick(View view) {
 
-                editTextDialod = new EditTextDialod(ImageEditActivity.getContext());
-                editTextDialod.show();
-                editTextDialod.setOnRadioGroupChangedListener(new EditTextDialod.OnRadioGroupChangedListener() {
-                    @Override
-                    public void onRadioGroupChanged(int shapeIndex, int colorIndex, String s) {
+                if (textView.getText().toString().equals("")) {
+                    editTextDialod = new EditTextDialod(ImageEditActivity.getContext());
+                    editTextDialod.show();
+                    editTextDialod.setOnRadioGroupChangedListener(new EditTextDialod.OnRadioGroupChangedListener() {
+                        @Override
+                        public void onRadioGroupChanged(int shapeIndex, int colorIndex, String s) {
 
-                        if (!s.equals("")) {
-                            switch (shapeIndex) {
-                                case 0:
-                                    textView.setTextSize(20);
-                                    break;
-                                case 1:
-                                    textView.setTextSize(30);
-                                    break;
-                                case 2:
-                                    textView.setTextSize(50);
-                                    break;
-                                default:
-                                    break;
+                            if (!s.equals("")) {
+                                switch (shapeIndex) {
+                                    case 0:
+                                        textView.setTextSize(20);
+                                        break;
+                                    case 1:
+                                        textView.setTextSize(30);
+                                        break;
+                                    case 2:
+                                        textView.setTextSize(50);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                switch (colorIndex) {
+                                    case 0:
+                                        textView.setTextColor(Color.parseColor("#0192E6"));
+                                        break;
+                                    case 1:
+                                        textView.setTextColor(Color.RED);
+                                        break;
+                                    case 2:
+                                        textView.setTextColor(Color.GREEN);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                textView.setText(s);
+                                textView.setVisibility(View.VISIBLE);
+                            } else {
+                                textView.setText("");
+                                textView.setVisibility(View.GONE);
                             }
-                            switch (colorIndex) {
-                                case 0:
-                                    textView.setTextColor(Color.parseColor("#0192E6"));
-                                    break;
-                                case 1:
-                                    textView.setTextColor(Color.RED);
-                                    break;
-                                case 2:
-                                    textView.setTextColor(Color.GREEN);
-                                    break;
-                                default:
-                                    break;
-                            }
-                            textView.setText(s);
-                            textView.setVisibility(View.VISIBLE);
                         }
-                    }
-                });
+                    });
+                }
             }
         });
 
@@ -376,9 +378,11 @@ public class ImageEditActivity extends ActionBarActivity {
                 data.putExtra(EDITED_IMAGE_PATH, file.getAbsolutePath());
                 data.putExtra(INDEX, intent.getIntExtra(INDEX, -1));
                 if (intent.getBooleanExtra("isEdited", false) == true) {
-                    new File(intent.getStringExtra(IMAGE_PATH)).delete();
+                    new File(path).delete();
                 }
                 setResult(RESULT_OK, data);
+                File file1 = new File(myDir, "image_scaled.jpg");
+                file1.delete();
                 finish();
             }
         }
@@ -416,9 +420,9 @@ public class ImageEditActivity extends ActionBarActivity {
                     break;
             }
 
-            canvas.drawBitmap(stickerBitmap, null, new Rect((int) motionEvent.getX() - 50, (int) motionEvent.getY() - 50,
-                    (int) motionEvent.getX() + 50, (int) motionEvent.getY() + 50), null);
-            Log.d("gagagagaga", motionEvent.getX() + "   /   " + motionEvent.getY());
+            canvas.drawBitmap(stickerBitmap, null, new Rect((int) motionEvent.getX() - getContext().getResources().getInteger(R.integer.size), (int) motionEvent.getY() - getContext().getResources().getInteger(R.integer.size),
+                    (int) motionEvent.getX() + getContext().getResources().getInteger(R.integer.size), (int) motionEvent.getY() + getContext().getResources().getInteger(R.integer.size)), null);
+
             editedImageView.setImageBitmap(mutableBitmap);
             editedImageView.setOnTouchListener(null);
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

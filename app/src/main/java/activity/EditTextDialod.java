@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
 
 
 import com.example.intern.picsartvideo.R;
@@ -31,12 +32,12 @@ public class EditTextDialod extends Dialog {
         this.context = context;
         setContentView(R.layout.edit_text_dialog);
 
-        editText=(EditText)findViewById(R.id.edt_txt_dialog);
+        editText = (EditText) findViewById(R.id.edt_txt_dialog);
 
         radioGroupSize = (RadioGroup) findViewById(R.id.radio_group_size);
         radioGroupColor = (RadioGroup) findViewById(R.id.radio_group_color);
-        setButton=(Button)findViewById(R.id.set_button);
-        cancelButton=(Button)findViewById(R.id.cancel_button);
+        setButton = (Button) findViewById(R.id.set_button);
+        cancelButton = (Button) findViewById(R.id.cancel_button);
 
         setButton.setOnClickListener(new View.OnClickListener() {
             @Override

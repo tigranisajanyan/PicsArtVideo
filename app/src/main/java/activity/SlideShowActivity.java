@@ -145,8 +145,6 @@ public class SlideShowActivity extends ActionBarActivity {
                 }
             }
         });
-
-
     }
 
     @Override
@@ -245,10 +243,10 @@ public class SlideShowActivity extends ActionBarActivity {
                         @Override
                         public void run() {
                             staggeredGridLayoutManager.scrollToPositionWithOffset(finalI + 1, finalJ * 2);
-                            if (finalI < selectedImagesPathList.size() - 1) {
+                            /*if (finalI < selectedImagesPathList.size() - 1) {
                                 viewPager.scrollBy((int) (halfWidth/80), 0);
-                            }
-                            //viewPager.setCurrentItem(finalI);
+                            }*/
+                            viewPager.setCurrentItem(finalI);
                         }
                     });
                     try {
